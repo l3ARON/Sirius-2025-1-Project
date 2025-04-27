@@ -73,6 +73,8 @@ void* Consumer(void *vparam);
 
 int main()
 {
+	printf("Hello Wolrd");
+	printf("Hello Wolrd");
 	// DO NOT MODIFY THE FOLLOWING TWO LINES.
 	int no_thread = 2;
 	pthread_t tid[2] = { 0 };
