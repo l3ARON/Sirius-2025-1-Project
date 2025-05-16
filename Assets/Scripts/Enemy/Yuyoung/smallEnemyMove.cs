@@ -15,19 +15,30 @@ public class EnemyMove : MonoBehaviour
         StartCoroutine(ChangeXSpeedRoutine());
     }
 
-    private float rayLength = 10f;   // 레이캐스트 길이
+    public float minRayLength;   // ground기준 최소 하강  높이
+    public float maxRayLength;   // ground기준 최대 상승  높이
 
     void FixedUpdate()
     {
         rigid.velocity = new Vector2(xSpeed, ySpeed);
+        // 최대 상승
+        Debug.DrawRay(rigid.position, Vector3.down * maxRayLength, Color.red);
+        RaycastHit2D rayHitHigh = Physics2D.Raycast(rigid.position, Vector3.down, maxRayLength);
 
-        // 레이를 활용해서 ground까지의 거리 체크
-        Debug.DrawRay(rigid.position, Vector3.down * rayLength, Color.green);
-        RaycastHit2D rayHit = Physics2D.Raycast(rigid.position, Vector3.down, rayLength);
-
-        if (rayHit.collider != null)
+        if (rayHitHigh.collider == null)
         {
-            Debug.Log("SmallEnemy: " + rayHit.collider.name);
+            Debug.Log("Too High");
+            ySpeed = -1 * Mathf.Abs(ySpeed); // 무조건 위로
+            Debug.Log("GoingDown");
+        }
+
+        // 최대 하강 
+        Debug.DrawRay(rigid.position, Vector3.down * minRayLength, Color.green);
+        RaycastHit2D rayHitLow = Physics2D.Raycast(rigid.position, Vector3.down, minRayLength);
+
+        if (rayHitLow.collider != null)
+        {
+            Debug.Log("Too Low");
             ySpeed = Mathf.Abs(ySpeed); // 무조건 위로
             Debug.Log("GoingUP");
         }
