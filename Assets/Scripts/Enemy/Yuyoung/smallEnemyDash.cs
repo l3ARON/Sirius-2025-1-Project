@@ -24,7 +24,7 @@ public class smallEnemyDash : MonoBehaviour
         // 플레이어와의 거리 계산
         float distance = Vector2.Distance(transform.position, player.position);
 
-        if (!isDashed)  // 대쉬 중이 아닐 때때
+        if (!isDashed)  // 대쉬 중이 아닐 때
         {
             if (distance <= detectionRadius && !isDetected) // 범위 안에 들어옴
             {
@@ -55,7 +55,6 @@ public class smallEnemyDash : MonoBehaviour
         yield return new WaitForSeconds(waitForAttack);
 
         isDashed = true; // 돌진 중
-        Debug.Log("대쉬 시작");
 
         // 감지된 시점의 플레이어 위치 기억
         Vector2 targetPosition = player.position;
@@ -64,8 +63,22 @@ public class smallEnemyDash : MonoBehaviour
         dashDirection = (targetPosition - (Vector2)transform.position).normalized;
         rigid.velocity = dashDirection * dashSpeed;
 
-        isDashed = false; // 돌진 완료
-        Debug.Log("대쉬 완료");
+        isDashed = false; // 돌진 종료
+
+    }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 돌진 중이고 충돌한 것이 Ground 태그일 경우
+        if (isDashed && collision.collider.CompareTag("Ground"))
+        {
+            Debug.Log("바닥이랑 충돌");
+            isDashed = false;
+        }
+        if (isDashed && collision.collider.CompareTag("Player"))
+        {
+            Debug.Log("플레이어와 충돌");
+            isDashed = false;
+        }
     }
 
     // 에디터 상에서 감지 범위를 시각적으로 표시
