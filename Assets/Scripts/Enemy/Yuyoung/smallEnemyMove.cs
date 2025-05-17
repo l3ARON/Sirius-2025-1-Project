@@ -1,13 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
-public class EnemyMove : MonoBehaviour
+public class smallEnemyMove : MonoBehaviour
 {
-    Rigidbody2D rigid;
+    private Rigidbody2D rigid;
 
-    public float xSpeed;         // x축 속도
-    public float ySpeed;           // y축 시작 속도
-    
+    public float xSpeed;            // x축 속도,        1
+    public float ySpeed;            // y축 시작 속도    1
+
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -15,8 +15,8 @@ public class EnemyMove : MonoBehaviour
         StartCoroutine(ChangeXSpeedRoutine());
     }
 
-    public float minRayLength;   // ground기준 최소 하강  높이
-    public float maxRayLength;   // ground기준 최대 상승  높이
+    public float minRayLength;   // ground기준 최소 하강  높이  1.5
+    public float maxRayLength;   // ground기준 최대 상승  높이  4
 
     void FixedUpdate()
     {
@@ -27,9 +27,9 @@ public class EnemyMove : MonoBehaviour
 
         if (rayHitHigh.collider == null)
         {
-            Debug.Log("Too High");
-            ySpeed = -1 * Mathf.Abs(ySpeed); // 무조건 위로
-            Debug.Log("GoingDown");
+            // Debug.Log("Too High");
+            ySpeed = -1 * Mathf.Abs(ySpeed); // 무조건 아래래로
+            // Debug.Log("GoingDown");
         }
 
         // 최대 하강 
@@ -38,9 +38,10 @@ public class EnemyMove : MonoBehaviour
 
         if (rayHitLow.collider != null)
         {
-            Debug.Log("Too Low");
+            // Debug.Log("Too Low");
             ySpeed = Mathf.Abs(ySpeed); // 무조건 위로
-            Debug.Log("GoingUP");
+            // Debug.Log("GoingUP");
+
         }
     }
 
