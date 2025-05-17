@@ -4,6 +4,8 @@ using UnityEngine;
 public class smallEnemyMove : MonoBehaviour
 {
     private Rigidbody2D rigid;
+    private SpriteRenderer spriteRenderer;
+
 
     public float xSpeed;            // x축 속도,        1
     public float ySpeed;            // y축 시작 속도    1
@@ -11,6 +13,8 @@ public class smallEnemyMove : MonoBehaviour
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         StartCoroutine(ChangeYSpeedRoutine());
         StartCoroutine(ChangeXSpeedRoutine());
     }
@@ -20,6 +24,8 @@ public class smallEnemyMove : MonoBehaviour
 
     void FixedUpdate()
     {
+        spriteRenderer.flipX = xSpeed > 0;
+
         rigid.velocity = new Vector2(xSpeed, ySpeed);
         // 최대 상승
         Debug.DrawRay(rigid.position, Vector3.down * maxRayLength, Color.red);
