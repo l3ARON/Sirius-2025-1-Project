@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class middleEnemyIdle : MonoBehaviour
@@ -7,55 +6,77 @@ public class middleEnemyIdle : MonoBehaviour
     private Rigidbody2D rigid;
     private SpriteRenderer spriteRenderer;
 
-    // 현재 이동 방향 (-1: 왼쪽, 0: 정지, 1: 오른쪽)
-    public int nextMove;
+    public float xSpeed = 1f; // 이동 속도
 
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        // 처음 이동 방향 결정 (2초 후부터 시작)
-        Invoke("Think", 2);
     }
 
     void FixedUpdate()
     {
-        // 현재 방향으로 이동
-        rigid.velocity = new Vector2(nextMove, rigid.velocity.y);
+        // 1. 이동
+        rigid.velocity = new Vector2(xSpeed, rigid.velocity.y);
 
-        // 스프라이트 방향 전환
+        // 2. 스프라이트 방향 전환
         FlipSprite();
 
-        // 앞에 발 밑에 땅이 있는지 확인
-        Vector2 frontVec = new Vector2(rigid.position.x + (nextMove * 0.5f), rigid.position.y);
-        Debug.DrawRay(frontVec, Vector2.down * 1f, Color.green);
+        // 3. 앞 위치 기준 계산
+        Vector2 frontVec = new Vector2(rigid.position.x + (xSpeed * 1f), rigid.position.y);
+        Vector2 checkDir = (xSpeed > 0) ? Vector2.right : Vector2.left;
 
-        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector2.down, 1f);
-        if (rayHit.collider == null)
+        // 4. 낭떠러지 체크 → 방향 전환
+        if (!IsGroundAhead(frontVec))
         {
-            Debug.Log("No Platform - 방향 전환");
-            nextMove *= -1;
-            CancelInvoke();          // 기존 Think 예약 취소
-            Invoke("Think", 5);      // 다시 생각 시작
+            xSpeed *= -1;
+            return;
+        }
+
+        // 5. 벽 체크 → 방향 전환
+        if (IsWallAhead(frontVec, checkDir))
+        {
+            xSpeed *= -1;
         }
     }
 
-    void Think()
-    {
-        // -1(왼쪽), 0(정지), 1(오른쪽) 중 선택
-        nextMove = Random.Range(-1, 2);
-
-        // 다음 Think 예약
-        Invoke("Think", 2);
-    }
-
+    // 스프라이트 반전 함수
     void FlipSprite()
     {
-        // 왼쪽이면 flipX = true, 오른쪽이면 false
-        if (nextMove != 0)
+        if (xSpeed != 0)
+            spriteRenderer.flipX = xSpeed > 0;
+    }
+
+    // 앞에 땅이 있는지 확인
+    bool IsGroundAhead(Vector2 origin)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, 1.5f);
+        Debug.DrawRay(origin, Vector2.down * 1.5f, Color.green);
+
+        if (hit.collider == null)
         {
-            spriteRenderer.flipX = nextMove == -1;
+            Debug.Log("낭떠러지!");
+            return false;
         }
+        else
+        {
+            Debug.Log("발밑 오브젝트 이름: " + hit.collider.gameObject.name);
+            return true;
+        }
+    }
+
+    // 앞에 벽이 있는지 확인
+    bool IsWallAhead(Vector2 origin, Vector2 direction)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, 0.1f);
+        Debug.DrawRay(origin, direction * 0.1f, Color.red);
+
+        if (hit.collider != null)
+        {
+            Debug.Log("앞이 막힘! → " + hit.collider.gameObject.name);
+            return true;
+        }
+
+        return false;
     }
 }
