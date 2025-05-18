@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovePJH : MonoBehaviour
+public class PlayerMoveJunHyung : MonoBehaviour
 {
     Rigidbody2D rigid;                    // 물리 연산을 위한 Rigidbody2D 참조
     SpriteRenderer spriteRenderer;        // 캐릭터 방향 좌우 반전을 위한 SpriteRenderer
@@ -115,12 +115,12 @@ public class PlayerMovePJH : MonoBehaviour
             {
                 if (!damagedEnemies.Contains(enemy))
                 {
-                    Monster monster = enemy.GetComponent<Monster>();
-                    if (monster != null)
-                    {
-                        monster.TakeDamage(attackDamage);
-                        damagedEnemies.Add(enemy);
-                    }
+                    // Monster monster = enemy.GetComponent<Monster>();
+                    // if (monster != null)
+                    // {
+                    //     monster.TakeDamage(attackDamage);
+                    //     damagedEnemies.Add(enemy);
+                    // }
                 }
             }
 
