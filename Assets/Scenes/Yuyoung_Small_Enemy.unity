@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 1202206603}
   - component: {fileID: 1202206605}
   m_Layer: 2
-  m_Name: Enemy
+  m_Name: SmallEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -320,12 +320,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 443859293, guid: 43e2bbf415aa05d4d82e0a874055ae07, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.9809053, a: 1}
+  m_Sprite: {fileID: 1629153664, guid: c844bfc0b15641740b9173655cbb1634, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 10.000001, y: 10.004884}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -408,7 +408,7 @@ Animator:
   m_GameObject: {fileID: 1202206598}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: cd8f0082a0883dd42b9b628e15ec3666, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2d188bfbd06542245b2a7b34176929f2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
