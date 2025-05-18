@@ -59,10 +59,8 @@ public class PlayerMove : MonoBehaviour
             RaycastHit2D rayHit = Physics2D.Raycast(rigid.position, Vector3.down, 1);
             if(rayHit.collider != null){
                 if(rayHit.distance < 0.5f)
-                    Debug.Log(rayHit.collider.name);
                     anim.SetBool("isJumping", false);
-            }else
-                Debug.Log("NULL");
+            }
         }
     }
 }
