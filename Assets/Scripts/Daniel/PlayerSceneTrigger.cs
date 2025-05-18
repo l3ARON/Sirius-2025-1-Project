@@ -18,7 +18,7 @@ public class PlayerSceneTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "Stage")
+        if(collision.gameObject.tag == "MoveStage")
         {
             int stagenum = int.Parse(collision.gameObject.name);
             //Next Stage
