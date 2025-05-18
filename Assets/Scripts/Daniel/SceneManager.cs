@@ -11,8 +11,28 @@ public class SceneManager : MonoBehaviour
     public PlayerSceneTrigger player;
     public GameObject[] Stages;
     public Animator transitionAnim;
+    public Camera myCamera;
     int temp;
-    
+
+    [SerializeField] Vector3[][] Teleport = new Vector3[][]
+    {       
+    new Vector3[] { new Vector3(0, 0, 0), new Vector3(42, 8, 0) }, // Teleport[0]
+    new Vector3[] { new Vector3(0, 0, 0), new Vector3(50, 0, 0), new Vector3(49, 30, 0)}, // Teleport[1]
+    new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, -44, 0)}, // Teleport[2]
+    new Vector3[] { new Vector3(0, 0, 0), new Vector3(85, 0, 0)}, // Teleport[3]
+    new Vector3[] { new Vector3(0, 0, 0)}  // Teleport[4]
+    };
+
+    [SerializeField] Vector3[][] cameraPosition = new Vector3[][]
+    {       
+    new Vector3[] { new Vector3(13.69696f, 2.96734f, -10), new Vector3(-14.15286f, 0.02492642f, -10) }, // Teleport[0]
+    new Vector3[] { new Vector3(11.36958f, 2.962502f, -10), new Vector3(-14.23454f, 3.031161f, -10), new Vector3(-14.36533f, 0.06812f, -10)}, // Teleport[1]
+    new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, -44, 0)}, // Teleport[2]
+    new Vector3[] { new Vector3(0, 0, 0), new Vector3(85, 0, 0)}, // Teleport[3]
+    new Vector3[] { new Vector3(0, 0, 0)}  // Teleport[4]
+    };
+
+
     public void NextStage(int num)
     {
         if(stageIndex < Stages.Length)
@@ -34,8 +54,9 @@ public class SceneManager : MonoBehaviour
     {
         Debug.Log("Anim Start");
         transitionAnim.SetTrigger("End");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.8f);
         ChangeMap();
+        yield return new WaitForSeconds(1.3f);
         transitionAnim.SetTrigger("Start");
     }
 
@@ -49,13 +70,15 @@ public class SceneManager : MonoBehaviour
         PlayerReposition();
         Stages[stageIndex].SetActive(false);
         Debug.Log("Next Stage");
-        stageIndex = temp;
+        stageIndex = temp/10;
         Stages[stageIndex].SetActive(true);
     }
 
     void PlayerReposition()
     {
-        player.transform.position = new Vector3(0,0,0);
+        int a = temp/10;
+        int b = temp%10;
+        player.transform.position = Teleport[a][b];
         player.VelocityZero();
     }
 

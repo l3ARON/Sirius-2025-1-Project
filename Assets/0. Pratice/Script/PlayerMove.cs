@@ -64,6 +64,5 @@ public class PlayerMove : MonoBehaviour
             }else
                 Debug.Log("NULL");
         }
-        
     }
 }
