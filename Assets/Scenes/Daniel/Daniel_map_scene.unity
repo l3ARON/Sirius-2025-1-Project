@@ -1236,7 +1236,7 @@ GameObject:
   - component: {fileID: 97998982}
   m_Layer: 0
   m_Name: 11
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1422,7 +1422,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1469557344}
-  - {fileID: 286568554}
   m_Father: {fileID: 232387541}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1550,7 +1549,7 @@ Transform:
   m_GameObject: {fileID: 286568553}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -946.9193, y: -533.8294, z: 0.16827686}
+  m_LocalPosition: {x: 13.080683, y: 6.1706095, z: 0.16827686}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1558,7 +1557,7 @@ Transform:
   - {fileID: 1264778940}
   - {fileID: 1733748515}
   - {fileID: 901214134}
-  m_Father: {fileID: 215828490}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &304067507
 GameObject:
@@ -5184,7 +5183,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 13.452463, y: 2.84791, z: -10}
+  m_LocalPosition: {x: 13.452475, y: 2.8479, z: -10}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7549,7 +7548,7 @@ GameObject:
   - component: {fileID: 924317007}
   m_Layer: 0
   m_Name: 40
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7813,7 +7812,7 @@ GameObject:
   - component: {fileID: 1006993067}
   m_Layer: 0
   m_Name: 40
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7943,7 +7942,7 @@ GameObject:
   - component: {fileID: 1045067620}
   m_Layer: 0
   m_Name: 01
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8073,7 +8072,7 @@ GameObject:
   - component: {fileID: 1046210825}
   m_Layer: 0
   m_Name: 20
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9766,7 +9765,7 @@ GameObject:
   - component: {fileID: 1439979442}
   m_Layer: 0
   m_Name: 12
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9993,7 +9992,7 @@ GameObject:
   - component: {fileID: 1493375239}
   m_Layer: 0
   m_Name: 10
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11542,7 +11541,7 @@ GameObject:
   - component: {fileID: 1909133414}
   m_Layer: 0
   m_Name: 30
-  m_TagString: Stage
+  m_TagString: MoveStage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12297,6 +12296,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 2005358181}
   - {fileID: 338728188}
+  - {fileID: 286568554}
   - {fileID: 124688297}
   - {fileID: 517333951}
   - {fileID: 1210098242}
