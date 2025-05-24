@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class middleEnemyIdle : MonoBehaviour
+public class middleEnemyMove : MonoBehaviour
 {
     private Rigidbody2D rigid;
     private SpriteRenderer spriteRenderer;
@@ -50,8 +50,8 @@ public class middleEnemyIdle : MonoBehaviour
     // 앞에 땅이 있는지 확인
     bool IsGroundAhead(Vector2 origin)
     {
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, 1.5f);
-        Debug.DrawRay(origin, Vector2.down * 1.5f, Color.green);
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, 0.5f);
+        Debug.DrawRay(origin, Vector2.down * 0.5f, Color.green);
 
         if (hit.collider == null)
         {
@@ -60,7 +60,6 @@ public class middleEnemyIdle : MonoBehaviour
         }
         else
         {
-            Debug.Log("발밑 오브젝트 이름: " + hit.collider.gameObject.name);
             return true;
         }
     }
