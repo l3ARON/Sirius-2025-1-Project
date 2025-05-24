@@ -3,156 +3,117 @@ using UnityEngine;
 
 public class middleEnemyAttack : MonoBehaviour
 {
-    // 플레이어 트랜스폼 (타겟)
     public Transform player;
 
-    // 플레이어 감지 범위
-    public float detectionRadius = 3f;
+    public float dashRange = 3f;     // A: 돌진 시작 거리
+    public float followRange = 1.5f; // B: 따라다니기 시작 거리
 
-    // 돌진 속도 및 돌진 전 대기 시간
-    public float dashSpeed = 5f;
-    public float waitForAttack = 1f;
+    private Rigidbody2D rigid;
+    private middleEnemyMove moveScript;
 
-    private Rigidbody2D rigid;                  // Rigidbody2D 컴포넌트 참조
-    private middleEnemyMove moveScript;          // 평소 이동 스크립트 참조
-    private bool isDetected = false;            // 플레이어 감지 여부
-    private bool isDashed = false;              // 현재 돌진 중 여부
-    private Vector2 dashDirection;              // 돌진할 방향
+    private bool isDetected = false;
+    private bool isDashed = false;
 
     void Start()
     {
-        // 컴포넌트 가져오기
         rigid = GetComponent<Rigidbody2D>();
         moveScript = GetComponent<middleEnemyMove>();
 
-        // 시작 시 평소 이동 스크립트 활성화
         moveScript.enabled = true;
     }
+
+    [SerializeField] private float height = 1f; // 감지 박스 높이 (Y축 범위)
 
     void Update()
     {
         if (isDashed) return;
 
-        // 플레이어와의 위치 차이
         Vector2 delta = player.position - transform.position;
+        float absDx = Mathf.Abs(delta.x);
+        float absDy = Mathf.Abs(delta.y);
 
-        // 타원 정규화 (찌그러진 범위 기준)
-        float dx = delta.x / (detectionRadius * 1.5f);  // 가로 감지 범위
-        float dy = delta.y / (detectionRadius * 0.7f);  // 세로 감지 범위
+        bool inHeight = absDy <= height * 0.5f;
 
-        // 타원 내부 여부 판단 (x/a)^2 + (y/b)^2 <= 1
-        bool inEllipse = (dx * dx + dy * dy) <= 1f;
-
-        if (inEllipse && !isDetected)
+        if (!inHeight)
         {
-            Debug.Log("감지됨!");
-            OnPlayerDetected(); // 감지 시 행동
+            // Y축 범위를 벗어났으면 무시
+            if (isDetected)
+            {
+                Debug.Log("🟥 Y축 범위 초과 → 감지 해제");
+                OnPlayerLost();
+            }
+            return;
         }
-        else if (!inEllipse && isDetected)
+
+        if (absDx > dashRange)
         {
-            Debug.Log("범위 밖으로 나감");
-            OnPlayerLost(); // 범위 벗어남 시 행동
+            if (isDetected)
+            {
+                Debug.Log("🟥 X축 too far → 감지 해제");
+                OnPlayerLost();
+            }
+        }
+        else if (absDx > followRange)
+        {
+            if (!isDetected)
+            {
+                Debug.Log("🟨 돌진 범위 진입!");
+                OnPlayerDetected();
+            }
+        }
+        else
+        {
+            if (!isDetected || !moveScript.enabled)
+            {
+                Debug.Log("🟩 따라다니기 범위 진입!");
+                FollowPlayer();
+            }
         }
     }
 
+    void FollowPlayer()
+    {
+        isDetected = true;
+        isDashed = false;
+        moveScript.enabled = true;
 
-    // 플레이어 감지 시 동작
+        Debug.Log("➡ 따라다니기 (로그만 출력 중)");
+    }
+
     void OnPlayerDetected()
     {
         isDetected = true;
-
-        // 이동 중단 및 이동 스크립트 비활성화
         moveScript.enabled = false;
         rigid.velocity = Vector2.zero;
 
-        // 돌진 실행
-        StartCoroutine(PerformDash());
+        Debug.Log("💥 돌진 준비 (로그만 출력 중)");
     }
 
-    // 플레이어 감지 해제 시 동작
     void OnPlayerLost()
     {
         isDetected = false;
         isDashed = false;
-        moveScript.enabled = true; // 이동 재개
+        moveScript.enabled = true;
+
+        Debug.Log("⏹ 감지 해제 및 상태 초기화");
     }
 
-    // 일정 시간 대기 후 플레이어 방향으로 돌진
-    IEnumerator PerformDash()
-    {
-        Debug.Log("돌진 대기");
-        // 돌진 전 대기 시간
-        yield return new WaitForSeconds(waitForAttack);
-
-        isDashed = true; // 돌진 시작
-
-        Debug.Log("돌진 시작");
-
-        // 감지 순간 플레이어 위치를 기준으로 방향 계산
-        Vector2 targetPosition = player.position;
-        dashDirection = (targetPosition - (Vector2)transform.position).normalized;
-
-        // 해당 방향으로 속도 부여
-        rigid.velocity = dashDirection * dashSpeed;
-
-        // 일정 시간 후 자동 정지 (예: 1초 돌진)
-        yield return new WaitForSeconds(1f);
-
-        // 만약 아직도 돌진 상태라면 수동으로 종료
-        if (isDashed)
-        {
-            Debug.Log("돌진 시간 만료, 자동 정지");
-            StopDash();
-        }
-    }
-
-    // 충돌 감지 함수
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (!isDashed) return; // 돌진 중이 아닐 경우 무시
-
-        string tag = collision.collider.tag;
-
-        // 바닥과 충돌한 경우
-        if (tag == "Ground")
-        {
-            Debug.Log("바닥이랑 충돌");
-            StopDash();
-        }
-        // 플레이어와 충돌한 경우
-        else if (tag == "Player")
-        {
-            Debug.Log("플레이어와 충돌");
-            StopDash();
-        }
-    }
-
-    // 돌진 멈추고 상태 초기화
-    void StopDash()
-    {
-        rigid.velocity = Vector2.zero;      // 정지
-        isDashed = false;                   // 돌진 상태 해제
-        
-        moveScript.enabled = true;          // 평소 이동 재개
-    }
-
-    // 에디터에서 감지 반경 시각화
     void OnDrawGizmosSelected()
     {
+        if (player == null) return;
+
+        Vector3 center = transform.position;
+
+        // dashRange 박스
         Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(center, new Vector3(dashRange * 2, height, 0));
 
-        // 현재 위치를 기준으로 타원의 중심 설정
-        Vector3 position = transform.position;
+        // followRange 박스
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(center, new Vector3(followRange * 2, height, 0));
 
-        // 비율 설정 (가로/세로 비율 다르게)
-        float radiusX = detectionRadius * 1.5f;  // 가로 감지 반경
-        float radiusY = detectionRadius * 0.7f;  // 세로 감지 반경
-
-        // 타원 그리기 위해 좌표계를 스케일링
-        Matrix4x4 originalMatrix = Gizmos.matrix;
-        Gizmos.matrix = Matrix4x4.TRS(position, Quaternion.identity, new Vector3(radiusX, radiusY, 1f));
-        Gizmos.DrawWireSphere(Vector3.zero, 1f); // 스케일된 좌표계에서 단위 원을 그림
-        Gizmos.matrix = originalMatrix;          // 원래 좌표계로 복원
+        // 중심 점
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(center, 0.05f);
     }
-
 }
