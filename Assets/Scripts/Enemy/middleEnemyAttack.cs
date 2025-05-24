@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class smallEnemyDash : MonoBehaviour
+public class middleEnemyAttack : MonoBehaviour
 {
     // 플레이어 트랜스폼 (타겟)
     public Transform player;
