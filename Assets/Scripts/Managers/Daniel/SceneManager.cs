@@ -14,6 +14,9 @@ public class SceneManager : MonoBehaviour
     public Camera myCamera;
     int temp;
 
+    [SerializeField] Vector3 respawnPoint; //부활 좌표
+    [SerializeField] int respawnstageIndex; //부활 스테이지
+
     [SerializeField] Vector3[][] Teleport = new Vector3[][]
     {       
     new Vector3[] { new Vector3(0, 0, 0), new Vector3(42, 8, 0) }, // Teleport[0]
@@ -32,6 +35,11 @@ public class SceneManager : MonoBehaviour
     new Vector3[] { new Vector3(0, 0, 0)}  // Teleport[4]
     };
 
+    void Awake()
+    {
+        respawnstageIndex = 0;
+        respawnPoint = new Vector3(0,0,0);
+    }
 
     public void NextStage(int num)
     {
@@ -62,7 +70,14 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
-        
+       
+    }
+
+    public void SetRespawn(Vector3 Pos)
+    {
+        Debug.Log("Respawn point Set!");
+        respawnPoint = Pos;
+        respawnstageIndex = stageIndex;
     }
 
     void ChangeMap()
@@ -82,6 +97,14 @@ public class SceneManager : MonoBehaviour
         player.VelocityZero();
     }
 
+    public void Respawn()
+    {
+        Stages[stageIndex].SetActive(false);
+        Stages[respawnstageIndex].SetActive(true);
+        player.transform.position = respawnPoint;
+        stageIndex = respawnstageIndex;
+        player.VelocityZero();
+    }
     // public void HealthDown()
     // {
     //     if (health > 0)
