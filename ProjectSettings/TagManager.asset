@@ -3,10 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Boss
-  - Boss_Bullet
-  - Melee
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -15,14 +12,14 @@ TagManager:
   - Water
   - UI
   - 
-  - Weapon
-  - Platform
   - 
   - 
   - 
-  - Boss_Bullet
-  - Boss
-  - BossDead
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
