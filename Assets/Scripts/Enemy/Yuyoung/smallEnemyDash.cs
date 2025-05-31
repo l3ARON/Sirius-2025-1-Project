@@ -121,7 +121,7 @@ public class smallEnemyDash : MonoBehaviour
     }
 
     // 돌진 멈추고 상태 초기화
-    void StopDash()
+    public void StopDash()
     {
         rigid.velocity = Vector2.zero;      // 정지
         isDashed = false;                   // 돌진 상태 해제
