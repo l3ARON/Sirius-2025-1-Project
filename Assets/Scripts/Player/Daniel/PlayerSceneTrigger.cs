@@ -8,6 +8,7 @@ public class PlayerSceneTrigger : MonoBehaviour
     public SceneManager sceneManager;
     SpriteRenderer spriteRender;
     public GameManager gameManager;
+    public smallEnemyDash dashScript;          // 평소 이동 스크립트 참조
 
     void Awake()
     {
@@ -38,6 +39,7 @@ public class PlayerSceneTrigger : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy")
         {
+            dashScript = collision.gameObject.GetComponent<smallEnemyDash>();
             OnDamaged(collision.transform.position);
             
         }
@@ -80,5 +82,10 @@ public class PlayerSceneTrigger : MonoBehaviour
         // colli.enabled = false;
         // //Die Effect Jump
         // rigid.AddForce(Vector2.up * 5, ForceMode2D.Impulse); 
+    }
+
+    public void SmallEnemyMoveReset() //소형 몬스터가 유저를 죽이면 움직임 활성화
+    {
+        dashScript.StopDash(); // 이동 재개
     }
 }

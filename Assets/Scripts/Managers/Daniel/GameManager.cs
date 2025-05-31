@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        
     }
 
     void Update()
@@ -29,6 +28,7 @@ public class GameManager : MonoBehaviour
         {
             playerScene.OnDie();
             Debug.Log("Wasted");
+            playerScene.SmallEnemyMoveReset();
             sceneManager.Respawn();
             health = 1;
         }

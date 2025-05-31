@@ -47,7 +47,6 @@ public class smallEnemyMove : MonoBehaviour
             // Debug.Log("Too Low");
             ySpeed = Mathf.Abs(ySpeed); // 무조건 위로
             // Debug.Log("GoingUP");
-
         }
     }
 
@@ -59,6 +58,7 @@ public class smallEnemyMove : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(0.5f, 3.0f));
         }
     }
+
     IEnumerator ChangeXSpeedRoutine()   // 5초마다 xSpeed 방향 반전
     {
         while (true)

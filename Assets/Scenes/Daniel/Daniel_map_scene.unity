@@ -13359,6 +13359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneManager: {fileID: 338728189}
   gameManager: {fileID: 338728190}
+  dashScript: {fileID: 16677780}
 --- !u!1 &2014352264
 GameObject:
   m_ObjectHideFlags: 3
