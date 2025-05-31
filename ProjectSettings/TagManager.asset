@@ -3,23 +3,26 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Boss
+  - Boss_Bullet
+  - MoveStage
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - player
   - Water
   - UI
   - 
   - 
+  - flatform
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - boss
+  - bossDeath
+  - bossBreath
   - 
   - 
   - 
