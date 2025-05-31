@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2748470560440837431}
   - component: {fileID: 3784481586244080756}
   - component: {fileID: 2127976319734632939}
-  m_Layer: 10
+  m_Layer: 14
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4842,7 +4842,7 @@ GameObject:
   - component: {fileID: 9169734641189578620}
   - component: {fileID: 8360896176140682086}
   - component: {fileID: 4788642847640136569}
-  m_Layer: 10
+  m_Layer: 14
   m_Name: breath_fire
   m_TagString: Boss_Bullet
   m_Icon: {fileID: 0}
@@ -4946,7 +4946,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

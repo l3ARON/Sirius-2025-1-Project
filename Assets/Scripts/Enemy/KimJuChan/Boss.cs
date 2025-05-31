@@ -39,7 +39,7 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
-        cameraS = GetComponent<CameraShake>();
+        //cameraS = GetComponent<CameraShake>();
         rigid = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         //플레이어 추적
@@ -148,7 +148,7 @@ public class Boss : MonoBehaviour
         {
             StopEverything();
             spriteRenderer.color = Color.gray;
-            gameObject.layer = 11; //반응 안하게
+            gameObject.layer = 13; //반응 안하게
             isDead = true;
             isChase = false;
             isDetec = false;
@@ -217,7 +217,7 @@ public class Boss : MonoBehaviour
         rigid.velocity = new Vector2(dirX * 10f, rigid.velocity.y);
         for (int i = 0; i < 10; i++)
         {
-            cameraS.Shake(0.05f);
+            //cameraS.Shake(0.05f);
             yield return new WaitForSeconds(0.1f);//이동   
         }
         rigid.velocity = new Vector2(0f, rigid.velocity.y);
@@ -243,7 +243,7 @@ public class Boss : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f); //0.5초동안 플레이어쪽으로 이동
 
-        cameraS.Shake(0.5f); //카메라 흔들림 효과 shake(지속시간)
+        //cameraS.Shake(0.5f); //카메라 흔들림 효과 shake(지속시간)
         isChase = false;
         meleeArea.enabled = true;
         //충돌범위 해제
