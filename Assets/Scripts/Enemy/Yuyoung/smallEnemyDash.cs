@@ -19,11 +19,14 @@ public class smallEnemyDash : MonoBehaviour
     private bool isDashed = false;              // 현재 돌진 중 여부
     private Vector2 dashDirection;              // 돌진할 방향
 
+    private Animator anim; // Animator 컴포넌트
+
     void Start()
     {
         // 컴포넌트 가져오기
         rigid = GetComponent<Rigidbody2D>();
         moveScript = GetComponent<smallEnemyMove>();
+        anim = GetComponent<Animator>(); // Animator 가져오기
 
         // 시작 시 평소 이동 스크립트 활성화
         moveScript.enabled = true;
@@ -87,6 +90,7 @@ public class smallEnemyDash : MonoBehaviour
 
         // 해당 방향으로 속도 부여
         rigid.velocity = dashDirection * dashSpeed;
+        anim.SetBool("isAttack", true); // ✅ 공격 애니메이션 ON
 
         // 일정 시간 후 자동 정지 (예: 1초 돌진)
         yield return new WaitForSeconds(1f);
@@ -125,6 +129,7 @@ public class smallEnemyDash : MonoBehaviour
     {
         rigid.velocity = Vector2.zero;      // 정지
         isDashed = false;                   // 돌진 상태 해제
+        anim.SetBool("isAttack", false); // ✅ 공격 애니메이션 OFF
         
         moveScript.enabled = true;          // 평소 이동 재개
     }
