@@ -169,11 +169,11 @@ public class PlayerMoveJunHyung : MonoBehaviour
             rigid.velocity = new Vector2(-maxSpeed, rigid.velocity.y);
 
         // 점프 후 낙하 중일 때 바닥 착지 판정
-        if (rigid.velocity.y < 0)
+        if (rigid.velocity.y < -0.3)
         {
-            Vector2 pos = rigid.position;
+            Vector2 pos = rigid.position;   // Ray 시작 지점
             float rayLength = 1.5f;
-            LayerMask groundMask = LayerMask.GetMask("Platform");
+            LayerMask groundMask = LayerMask.GetMask("flatform");
 
             RaycastHit2D center = Physics2D.Raycast(pos, Vector2.down, rayLength, groundMask);
             RaycastHit2D left = Physics2D.Raycast(pos + Vector2.left * 0.3f, Vector2.down, rayLength, groundMask);
