@@ -81,12 +81,12 @@ public class PlayerMoveJunHyung : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
         if (h != 0)
         {
-            spriteRenderer.flipX = h < 0; // 왼쪽 입력 시 flipX = true
+            spriteRenderer.flipX = h > 0; // 왼쪽 입력 시 flipX = true
 
             // 공격 범위 위치도 방향에 맞춰 좌우 반전
             float attackX = Mathf.Abs(attackPoint.localPosition.x);
             attackPoint.localPosition = new Vector3(
-                spriteRenderer.flipX ? -attackX : attackX,
+                spriteRenderer.flipX ? attackX : -attackX,
                 attackPoint.localPosition.y,
                 attackPoint.localPosition.z
             );
@@ -139,6 +139,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
             isDashing = true;
             dashTimer = dashDuration;
             lastDashTime = Time.time;
+            anim.SetBool("isDashed", true);
 
             StartCoroutine(DashCooldownCountdown()); // 쿨타임 카운트 시작
         }
@@ -150,11 +151,15 @@ public class PlayerMoveJunHyung : MonoBehaviour
         // 대시 중일 때 빠르게 방향 이동 (Y속도 고정으로 위 튐 방지)
         if (isDashing)
         {
-            float dashDirection = spriteRenderer.flipX ? -1f : 1f;
+            float dashDirection = spriteRenderer.flipX ? 1f : -1f;
             rigid.velocity = new Vector2(dashDirection * dashSpeed, 0f);
 
             dashTimer -= Time.fixedDeltaTime;
-            if (dashTimer <= 0) isDashing = false;
+            if (dashTimer <= 0)
+            {
+                isDashing = false;
+                anim.SetBool("isDashed", false);
+            }
             return; // 대시 중 일반 이동 무시
         }
 
@@ -169,11 +174,11 @@ public class PlayerMoveJunHyung : MonoBehaviour
             rigid.velocity = new Vector2(-maxSpeed, rigid.velocity.y);
 
         // 점프 후 낙하 중일 때 바닥 착지 판정
-        if (rigid.velocity.y < 0)
+        if (rigid.velocity.y < -0.3)
         {
-            Vector2 pos = rigid.position;
+            Vector2 pos = rigid.position;   // Ray 시작 지점
             float rayLength = 1.5f;
-            LayerMask groundMask = LayerMask.GetMask("Platform");
+            LayerMask groundMask = LayerMask.GetMask("flatform");
 
             RaycastHit2D center = Physics2D.Raycast(pos, Vector2.down, rayLength, groundMask);
             RaycastHit2D left = Physics2D.Raycast(pos + Vector2.left * 0.3f, Vector2.down, rayLength, groundMask);
