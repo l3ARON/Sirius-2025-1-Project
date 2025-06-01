@@ -139,6 +139,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
             isDashing = true;
             dashTimer = dashDuration;
             lastDashTime = Time.time;
+            anim.SetBool("isDashed", true);
 
             StartCoroutine(DashCooldownCountdown()); // 쿨타임 카운트 시작
         }
@@ -154,7 +155,11 @@ public class PlayerMoveJunHyung : MonoBehaviour
             rigid.velocity = new Vector2(dashDirection * dashSpeed, 0f);
 
             dashTimer -= Time.fixedDeltaTime;
-            if (dashTimer <= 0) isDashing = false;
+            if (dashTimer <= 0)
+            {
+                isDashing = false;
+                anim.SetBool("isDashed", false);
+            }
             return; // 대시 중 일반 이동 무시
         }
 
