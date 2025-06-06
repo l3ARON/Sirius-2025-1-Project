@@ -2169,7 +2169,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &220117629
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2206,7 +2206,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.1157954, y: 2.5986328}
+    oldSize: {x: 3.1656086, y: 2.5947266}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -2279,7 +2279,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22dba437de31ab842b38faba4c7bceb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSpeed: 1
+  xSpeed: 2
+  xSpeedToFollow: 3
+  player: {fileID: 2005358181}
+  targetTag: Player
+  detectRangeX: 9
+  detectRangeY: 1
+  closeRangeX: 2.2
+  closeRangeY: 1
 --- !u!1 &232387540
 GameObject:
   m_ObjectHideFlags: 0
@@ -14376,12 +14383,12 @@ MonoBehaviour:
   maxSpeed: 10
   jumpPower: 25
   attackDelay: 0.5
-  attackPoint: {fileID: 1493375241}
+  attackPoint: {fileID: 125122946}
   attackRange: 1
   attackDamage: 20
   dashSpeed: 25
   dashDuration: 0.2
-  dashCooldown: 1
+  dashCooldown: 0
   rangedAttackDelay: 0.5
   longRangeAttackPrefab: {fileID: 0}
   firePoint: {fileID: 0}
