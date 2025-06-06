@@ -33,5 +33,9 @@ public class LongRangeAttack : MonoBehaviour
             }
             Destroy(gameObject);
         }
+        if (other.gameObject.layer == LayerMask.NameToLayer("flatform"))
+        {
+            Destroy(gameObject);
+        }
     }
 }

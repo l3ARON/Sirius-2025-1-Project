@@ -87,8 +87,23 @@ public class SmallEnemy : MonoBehaviour
         if (currentHP <= 0)
         {
             Debug.Log("몬스터 사망");
-            Destroy(gameObject);
+            Die(); // 사망 처리 함수로 분리
         }
+    }
+
+    void Die()
+    {
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            var pm = player.GetComponent<PlayerMoveJunHyung>();
+            if (pm != null)
+            {
+                pm.EnableNextRangedAttack(); // 다음 공격을 원거리로 설정
+            }
+        }
+
+        Destroy(gameObject);
     }
 
     // 플레이어 감지 시 동작
@@ -189,4 +204,4 @@ public class SmallEnemy : MonoBehaviour
     {
         return obj == this.gameObject || obj.transform.IsChildOf(this.transform);
     }
-} 
+}
