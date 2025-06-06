@@ -19,11 +19,12 @@ public class CameraShake : MonoBehaviour
 
     void StartShake()
     {
+        Debug.Log("흔들기 작동");
         float cameraPosX = Random.value * shakeRange * 2 - shakeRange;
         float cameraPosY = Random.value * shakeRange * 2 - shakeRange;
         Vector3 StartcameraPos = mainCamera.transform.localPosition;
-        StartcameraPos.x = cameraPosX;
-        StartcameraPos.y = cameraPosY;
+        StartcameraPos.x = cameraPosX + 1.95f;
+        StartcameraPos.y = cameraPosY + 2.85f;
         mainCamera.transform.localPosition = StartcameraPos;
     }
 

@@ -39,7 +39,7 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
-        //cameraS = GetComponent<CameraShake>();
+        cameraS = GetComponent<CameraShake>();
         rigid = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         //플레이어 추적
@@ -229,6 +229,7 @@ public class Boss : MonoBehaviour
     }
     IEnumerator Taunt() //찍기 함수
     {
+        Debug.Log("찍기");
         //걷는 모션 제거, 플레이어를 향해서 이동만 허용
         ChaseEnd();
         isInvincible = true;
@@ -243,7 +244,7 @@ public class Boss : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f); //0.5초동안 플레이어쪽으로 이동
 
-        //cameraS.Shake(0.5f); //카메라 흔들림 효과 shake(지속시간)
+        cameraS.Shake(0.5f); //카메라 흔들림 효과 shake(지속시간)
         isChase = false;
         meleeArea.enabled = true;
         //충돌범위 해제
