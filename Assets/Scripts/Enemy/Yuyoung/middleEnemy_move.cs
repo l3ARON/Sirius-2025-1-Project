@@ -35,7 +35,7 @@ public class middleEnemyMove : MonoBehaviour
     void FixedUpdate()
     {
         // 현재 이동 여부에 따라 걷기 애니메이션 설정
-        anim.SetBool("isWalk", xSpeed != 0);
+        // anim.SetBool("isWalk", xSpeed != 0);
 
         // 감지 범위 안에 타겟이 있을 경우 → 해당 방향으로 이동
         if (IsTargetInRange() && player != null)
@@ -43,18 +43,19 @@ public class middleEnemyMove : MonoBehaviour
             Debug.Log("감지!!");
             float direction = Mathf.Sign(player.position.x - transform.position.x); // 방향 결정 (+/-1)
             xSpeed = Mathf.Abs(xSpeedToFollow) * direction; // 방향에 따라 속도 부호 결정
-        }
+            anim.SetBool("isAttack", true);
+        }else
+            anim.SetBool("isAttack", false);
 
         // 좁은 범위 안에 플레이어가 있을 경우 로그 출력
         if (IsPlayerVeryClose())
         {
             Debug.Log("플레이어가 가까이 있음!");
             xSpeed = 0;
-            anim.SetBool("isAttack", true);
-        }else
-            anim.SetBool("isAttack", false);
+        }
 
-        // 실제 이동 처리
+
+            // 실제 이동 처리
             rigid.velocity = new Vector2(xSpeed, rigid.velocity.y);
 
         // 이동 방향에 따라 스프라이트 반전
