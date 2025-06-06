@@ -30,6 +30,21 @@ public class PlayerMoveJunHyung : MonoBehaviour
     private float lastDashTime = -999f;   // 마지막 대시 시각
     private bool isCooldown = false;      // 대시 쿨타임 진행 중 여부
 
+
+
+
+    private bool isNextAttackRanged = false;
+
+    public void EnableNextRangedAttack()
+    {
+        isNextAttackRanged = true;
+    }
+
+
+
+
+
+
     // 대시 쿨타임 카운트다운 로그 출력 코루틴
     private IEnumerator DashCooldownCountdown()
     {
@@ -69,12 +84,9 @@ public class PlayerMoveJunHyung : MonoBehaviour
         // 점프 입력 처리 (공중 아닐 때만 가능)
         if (Input.GetButtonDown("Jump") && !anim.GetBool("isJump"))
         {
-
             rigid.velocity = new Vector2(rigid.velocity.x, 0f); // Y속도 초기화 (더블 점프 방지)
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse); // 점프 힘 가하기
             anim.SetBool("isJump", true); // 점프 상태로 전환
-
-
         }
 
         // 입력이 없을 경우 감속 처리 (자연스러운 정지 구현)
@@ -90,16 +102,18 @@ public class PlayerMoveJunHyung : MonoBehaviour
         {
             spriteRenderer.flipX = h > 0; // 왼쪽 입력 시 flipX = true
 
-            // 공격 범위 위치도 방향에 맞춰 좌우 반전
+            // 공격 지점 위치 반전
             float attackX = Mathf.Abs(attackPoint.localPosition.x);
+            float fireX = Mathf.Abs(firePoint.localPosition.x);
+
             attackPoint.localPosition = new Vector3(
                 spriteRenderer.flipX ? attackX : -attackX,
                 attackPoint.localPosition.y,
                 attackPoint.localPosition.z
             );
-            float firePointX = Mathf.Abs(firePoint.localPosition.x);
+
             firePoint.localPosition = new Vector3(
-                spriteRenderer.flipX ? -firePointX : firePointX,
+                spriteRenderer.flipX ? fireX : -fireX,
                 firePoint.localPosition.y,
                 firePoint.localPosition.z
             );
@@ -109,45 +123,71 @@ public class PlayerMoveJunHyung : MonoBehaviour
         anim.SetBool("isWalk", !anim.GetBool("isJump") && Mathf.Abs(rigid.velocity.x) >= 0.3f);
 
         // 공격 시작 입력 처리
+        // if (Input.GetButtonDown("Fire1") && !isAttacking && !isDashing)
+        // {
+        //     isAttacking = true;
+        //     anim.SetBool("isAttack", true);
+        //     attackTimer = attackDelay;
+        //     damagedEnemies.Clear(); // 중복 타격 방지용 HashSet 초기화
+        // }
+
+
+
+        // 공격
+        // 원거리 공격 가능여부 판단 후 원거리 공격격
         if (Input.GetButtonDown("Fire1") && !isAttacking && !isDashing)
         {
-            isAttacking = true;
-            anim.SetBool("isAttack", true);
-            attackTimer = attackDelay;
-            damagedEnemies.Clear(); // 중복 타격 방지용 HashSet 초기화
-        }
+            if (isNextAttackRanged && longRangeAttackPrefab != null && firePoint != null)
+            {
+                // 🔥 원거리 공격
+                GameObject proj = Instantiate(longRangeAttackPrefab, firePoint.position, Quaternion.identity);
+                var lr = proj.GetComponent<LongRangeAttack>();
+                if (lr != null)
+                {
+                    lr.direction = spriteRenderer.flipX ? Vector2.right : Vector2.left;
+                }
+                isNextAttackRanged = false;
+                rangedAttackTimer = rangedAttackDelay;
 
-        // 공격 지속 시간 동안 적 타격 처리
+                Debug.Log("🎯 원거리 공격 발사");
+            }
+            else
+            {
+                // 🗡️ 근접 공격
+                isAttacking = true;
+                anim.SetBool("isAttack", true);
+                attackTimer = attackDelay;
+                damagedEnemies.Clear(); // 중복 방지
+            }
+        }
+        // 근접 공격 처리리
         if (isAttacking)
         {
             attackTimer -= Time.deltaTime;
 
-            // 공격 범위 내 모든 콜라이더 감지
+            // 근접 공격 범위 처리
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
-            
+
             foreach (Collider2D collider in hitColliders)
             {
-                // Enemy 태그를 가진 오브젝트만 처리하고, 아직 데미지를 주지 않은 대상인 경우에만 처리
                 if (collider.CompareTag("Enemy") && !damagedEnemies.Contains(collider.gameObject))
                 {
-                    // TakeDamage 메서드를 가진 컴포넌트 찾기
                     var components = collider.GetComponents<MonoBehaviour>();
                     foreach (var component in components)
                     {
-                        // 리플렉션을 사용하여 TakeDamage 메서드 찾기
                         var method = component.GetType().GetMethod("TakeDamage");
                         if (method != null)
                         {
                             method.Invoke(component, new object[] { attackDamage });
                             damagedEnemies.Add(collider.gameObject);
                             Debug.Log($"💥 {collider.gameObject.name}에게 {attackDamage} 데미지!");
-                            break; // 하나의 컴포넌트에서 데미지를 적용했다면 중단
+                            break;
                         }
                     }
                 }
             }
 
-            // 공격 종료 처리
+            // 근접 공격 종료
             if (attackTimer <= 0)
             {
                 isAttacking = false;
@@ -155,6 +195,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
                 damagedEnemies.Clear();
             }
         }
+
 
         // 대시 입력 처리 (쿨타임과 중복 대시 방지 포함)
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isCooldown)
@@ -165,24 +206,6 @@ public class PlayerMoveJunHyung : MonoBehaviour
             anim.SetBool("isDashed", true);
 
             StartCoroutine(DashCooldownCountdown()); // 쿨타임 카운트 시작
-        }
-
-        // 원거리 공격 쿨타임 타이머 감소
-        if (rangedAttackTimer > 0f)
-            rangedAttackTimer -= Time.deltaTime;
-
-        if (Input.GetKeyDown(KeyCode.E) && rangedAttackTimer <= 0f)
-        {
-            if (longRangeAttackPrefab != null && firePoint != null)
-            {
-                GameObject proj = Instantiate(longRangeAttackPrefab, firePoint.position, Quaternion.identity);
-                var lr = proj.GetComponent<LongRangeAttack>();
-                if (lr != null)
-                {
-                    lr.direction = spriteRenderer.flipX ? Vector2.left : Vector2.right;
-                }
-                rangedAttackTimer = rangedAttackDelay;
-            }
         }
     }
 
