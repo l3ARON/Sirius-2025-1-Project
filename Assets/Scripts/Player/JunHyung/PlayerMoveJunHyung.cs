@@ -100,6 +100,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
         if (h != 0)
         {
+            anim.SetBool("isWalk", true); // 이동 애니메이션
             spriteRenderer.flipX = h > 0; // 왼쪽 입력 시 flipX = true
 
             // 공격 지점 위치 반전
@@ -118,9 +119,13 @@ public class PlayerMoveJunHyung : MonoBehaviour
                 firePoint.localPosition.z
             );
         }
+        else
+        {
+            anim.SetBool("isWalk", false);
+        }
 
         // 걷기 애니메이션 상태 업데이트 (속도에 따라)
-        anim.SetBool("isWalk", !anim.GetBool("isJump") && Mathf.Abs(rigid.velocity.x) >= 0.3f);
+        // anim.SetBool("isWalk", !anim.GetBool("isJump") && Mathf.Abs(rigid.velocity.x) >= 0.3f);
 
         // 공격 시작 입력 처리
         // if (Input.GetButtonDown("Fire1") && !isAttacking && !isDashing)
