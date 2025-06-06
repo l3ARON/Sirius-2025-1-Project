@@ -69,11 +69,9 @@ public class PlayerMoveJunHyung : MonoBehaviour
         // 점프 입력 처리 (공중 아닐 때만 가능)
         if (Input.GetButtonDown("Jump") && !anim.GetBool("isJump"))
         {
-
             rigid.velocity = new Vector2(rigid.velocity.x, 0f); // Y속도 초기화 (더블 점프 방지)
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse); // 점프 힘 가하기
             anim.SetBool("isJump", true); // 점프 상태로 전환
-
 
         }
 
@@ -88,6 +86,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
         if (h != 0)
         {
+            anim.SetBool("isWalk", true); // 이동 애니메이션
             spriteRenderer.flipX = h > 0; // 왼쪽 입력 시 flipX = true
 
             // 공격 범위 위치도 방향에 맞춰 좌우 반전
@@ -104,9 +103,13 @@ public class PlayerMoveJunHyung : MonoBehaviour
                 firePoint.localPosition.z
             );
         }
+        else
+        {
+            anim.SetBool("isWalk", false);
+        }
 
         // 걷기 애니메이션 상태 업데이트 (속도에 따라)
-        anim.SetBool("isWalk", !anim.GetBool("isJump") && Mathf.Abs(rigid.velocity.x) >= 0.3f);
+        // anim.SetBool("isWalk", !anim.GetBool("isJump") && Mathf.Abs(rigid.velocity.x) >= 0.3f);
 
         // 공격 시작 입력 처리
         if (Input.GetButtonDown("Fire1") && !isAttacking && !isDashing)
