@@ -22,6 +22,7 @@ public class middleEnemyMove : MonoBehaviour
     // 좁은 근접 감지 범위
     public float closeRangeX = 2f;      // 근접 감지 범위 (가로)
     public float closeRangeY = 1f;      // 근접 감지 범위 (세로)
+    public AudioSource barkClip;
 
     // 시작 시 컴포넌트 할당
     void Start()
@@ -41,6 +42,7 @@ public class middleEnemyMove : MonoBehaviour
         if (IsTargetInRange() && player != null)
         {
             Debug.Log("감지!!");
+            barkClip.Play();
             float direction = Mathf.Sign(player.position.x - transform.position.x); // 방향 결정 (+/-1)
             xSpeed = Mathf.Abs(xSpeedToFollow) * direction; // 방향에 따라 속도 부호 결정
             anim.SetBool("isAttack", true);

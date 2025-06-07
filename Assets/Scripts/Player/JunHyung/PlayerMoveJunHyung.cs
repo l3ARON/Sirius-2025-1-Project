@@ -29,7 +29,10 @@ public class PlayerMoveJunHyung : MonoBehaviour
     public float dashCooldown = 5f;       // 대시 쿨타임 (초)
     private float lastDashTime = -999f;   // 마지막 대시 시각
     private bool isCooldown = false;      // 대시 쿨타임 진행 중 여부
-
+    //사운드 관련
+    public AudioSource attackClip;
+    public AudioSource dashClip;
+    public AudioSource walkClip;
 
 
 
@@ -100,6 +103,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
         if (h != 0)
         {
+            walkClip.Play();
             anim.SetBool("isWalk", true); // 이동 애니메이션
             spriteRenderer.flipX = h > 0; // 왼쪽 입력 시 flipX = true
 
@@ -145,6 +149,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
             if (isNextAttackRanged && longRangeAttackPrefab != null && firePoint != null)
             {
                 // 🔥 원거리 공격
+                attackClip.Play();
                 GameObject proj = Instantiate(longRangeAttackPrefab, firePoint.position, Quaternion.identity);
                 var lr = proj.GetComponent<LongRangeAttack>();
                 if (lr != null)
@@ -159,6 +164,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
             else
             {
                 // 🗡️ 근접 공격
+                attackClip.Play();
                 isAttacking = true;
                 anim.SetBool("isAttack", true);
                 attackTimer = attackDelay;
@@ -205,6 +211,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
         // 대시 입력 처리 (쿨타임과 중복 대시 방지 포함)
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isCooldown)
         {
+            dashClip.Play();
             isDashing = true;
             dashTimer = dashDuration;
             lastDashTime = Time.time;

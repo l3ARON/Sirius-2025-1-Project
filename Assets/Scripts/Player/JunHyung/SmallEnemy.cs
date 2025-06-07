@@ -24,7 +24,8 @@ public class SmallEnemy : MonoBehaviour
     private bool isDashed = false;
     private Vector2 dashDirection;
     private bool isMovementPaused = false;
-
+    //사운드
+    public AudioSource attacksoundClip;
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -131,7 +132,7 @@ public class SmallEnemy : MonoBehaviour
 
         isDashed = true;
         Debug.Log("돌진 시작");
-
+        attacksoundClip.Play();
         Vector2 targetPosition = player.position;
         dashDirection = (targetPosition - (Vector2)transform.position).normalized;
         rigid.velocity = dashDirection * dashSpeed;
