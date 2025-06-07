@@ -16,7 +16,7 @@ public class Boss : MonoBehaviour
     public float moveSpeed;
 
     Rigidbody2D rigid;
-    BoxCollider2D boxCollider;
+    PolygonCollider2D bossCollider;
     SpriteRenderer spriteRenderer;
     Animator anim;
 
@@ -24,9 +24,9 @@ public class Boss : MonoBehaviour
     public Transform breathPort;
     //플레이어 찍을 위치 저장 변수
     //탐지 범위
-    public float outlineDetec = 7f;
-    public float middleDetec = 5f;
-    public float inlineDetec = 3f;
+    public float outlineDetec = 9f;
+    public float middleDetec = 7f;
+    public float inlineDetec = 5f;
     public bool isDead = false;
 
     bool isChase = false;
@@ -41,7 +41,7 @@ public class Boss : MonoBehaviour
     {
         cameraS = GetComponent<CameraShake>();
         rigid = GetComponent<Rigidbody2D>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        bossCollider = GetComponent<PolygonCollider2D>();
         //플레이어 추적
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -60,6 +60,7 @@ public class Boss : MonoBehaviour
     {
         isChase = false;
         anim.SetBool("isWalking", false);
+        rigid.velocity = Vector2.zero;
     }
     void FixedUpdate()
     {
@@ -203,6 +204,7 @@ public class Boss : MonoBehaviour
 
         yield return new WaitForSeconds(4f); //4초 후 브레스 없애기
         Destroy(instanceBreath);
+        anim.SetTrigger("endBreath");
         ChaseStart(); //이동 시작
         StartCoroutine(Think());
     }
@@ -210,43 +212,50 @@ public class Boss : MonoBehaviour
     {
         ChaseEnd();
         anim.SetTrigger("doRush");
+        float dirX = ((Vector2)target.position - rigid.position).normalized.x; //플레이어와 보스의 x벡터 구하기
         yield return new WaitForSeconds(1f);//준비시간
         isInvincible = true; //무적 활성화
 
-        float dirX = ((Vector2)target.position - rigid.position).normalized.x; //플레이어와 보스의 x벡터 구하기
         rigid.velocity = new Vector2(dirX * 10f, rigid.velocity.y);
         for (int i = 0; i < 10; i++)
         {
-            //cameraS.Shake(0.05f);
+            cameraS.Shake(0.05f);
             yield return new WaitForSeconds(0.1f);//이동   
         }
         rigid.velocity = new Vector2(0f, rigid.velocity.y);
         isInvincible = false;
 
         yield return new WaitForSeconds(1f);//이동
+        anim.SetTrigger("endRush");
         ChaseStart();
         StartCoroutine(Think());
     }
     IEnumerator Taunt() //찍기 함수
     {
-        Debug.Log("찍기");
         //걷는 모션 제거, 플레이어를 향해서 이동만 허용
         ChaseEnd();
         isInvincible = true;
         anim.SetTrigger("doTaunt");
+        rigid.AddForce(Vector2.up * 700f);
         //충동범위 활성화
         yield return new WaitForSeconds(1f); //1초동안 하늘에 떠있음
+        rigid.velocity = Vector2.zero;
+        rigid.gravityScale = 0f;
 
-        //원래 이동 스피드 기억
+        yield return new WaitForSeconds(0.5f); //0.5초 동안 공중에서 대기
+        rigid.gravityScale = 1f;
+        rigid.AddForce(Vector2.down * 1400f);
+
         isChase = true;
-        float temp = moveSpeed;
-        moveSpeed = 3f;
+        float temp = moveSpeed; //원래 이동 스피드 기억
+        moveSpeed = 10f;
 
-        yield return new WaitForSeconds(0.5f); //0.5초동안 플레이어쪽으로 이동
+        yield return new WaitForSeconds(0.3f); //0.5초동안 플레이어쪽으로 이동
 
         cameraS.Shake(0.5f); //카메라 흔들림 효과 shake(지속시간)
         isChase = false;
         meleeArea.enabled = true;
+        rigid.velocity = Vector2.zero;
         //충돌범위 해제
         yield return new WaitForSeconds(0.5f);
         meleeArea.enabled = false;
