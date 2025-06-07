@@ -59,7 +59,7 @@ public class SmallEnemy : MonoBehaviour
         spriteRenderer.flipX = xSpeed > 0;
         rigid.velocity = new Vector2(xSpeed, ySpeed);
 
-        LayerMask groundMask = LayerMask.GetMask("Platform");
+        LayerMask groundMask = LayerMask.GetMask("flatform");
 
         // 최대 상승 체크
         Debug.DrawRay(rigid.position, Vector3.down * maxRayLength, Color.red);
