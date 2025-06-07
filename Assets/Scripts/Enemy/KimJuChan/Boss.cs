@@ -201,6 +201,7 @@ public class Boss : MonoBehaviour
 
         //브레스 생성
         instanceBreath = Instantiate(breath, breathPort.position, breathPort.rotation);
+        cameraS.Shake(4f, 0.01f);
 
         yield return new WaitForSeconds(4f); //4초 후 브레스 없애기
         Destroy(instanceBreath);
@@ -219,7 +220,7 @@ public class Boss : MonoBehaviour
         rigid.velocity = new Vector2(dirX * 10f, rigid.velocity.y);
         for (int i = 0; i < 10; i++)
         {
-            cameraS.Shake(0.05f);
+            cameraS.Shake(0.05f, 0.05f);
             yield return new WaitForSeconds(0.1f);//이동   
         }
         rigid.velocity = new Vector2(0f, rigid.velocity.y);
@@ -252,7 +253,7 @@ public class Boss : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f); //0.5초동안 플레이어쪽으로 이동
 
-        cameraS.Shake(0.5f); //카메라 흔들림 효과 shake(지속시간)
+        cameraS.Shake(0.5f, 0.05f); //카메라 흔들림 효과 shake(지속시간)
         isChase = false;
         meleeArea.enabled = true;
         rigid.velocity = Vector2.zero;

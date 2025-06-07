@@ -10,8 +10,9 @@ public class CameraShake : MonoBehaviour
     Vector3 cameraPos;
     [SerializeField][Range(0.01f, 0.1f)] float shakeRange = 0.05f;
 
-    public void Shake(float duration)
+    public void Shake(float duration, float inputRange)
     {
+        shakeRange = inputRange;
         cameraPos = mainCamera.transform.localPosition;
         InvokeRepeating("StartShake", 0f, 0.005f);
         Invoke("StopShake", duration);
