@@ -41,7 +41,6 @@ public class PlayerSceneTrigger : MonoBehaviour
         {
             dashScript = collision.gameObject.GetComponent<smallEnemyDash>();
             OnDamaged(collision.transform.position);
-            
         }
     }
 

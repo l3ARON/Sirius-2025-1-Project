@@ -37,6 +37,12 @@ public class Boss : MonoBehaviour
     GameObject instanceBreath;
     bool isInvincible = false;
 
+    public AudioSource crushClip; //점프
+    public AudioSource rushClip; //돌진
+    public AudioSource flameClip; //분출
+    public AudioSource growlClip; //으르렁 소리
+    private float growlChance = 0.25f; //으르렁 거릴 확률
+    public AudioSource rumbleClip; //흔들리는 소리
     void Start()
     {
         cameraS = GetComponent<CameraShake>();
@@ -162,6 +168,10 @@ public class Boss : MonoBehaviour
 
     IEnumerator Think()
     {
+        if (Random.value < 0.15f) //확률적 으르렁 거림
+        {
+            growlClip.Play();
+        }
         //행동 시간 조정
         yield return new WaitForSeconds(1f);
 
@@ -196,10 +206,12 @@ public class Boss : MonoBehaviour
     IEnumerator BreathShot() //브레스 함수
     {
         ChaseEnd(); //이동 멈춤
+        flameClip.Play();
         anim.SetTrigger("doBreath");
         yield return new WaitForSeconds(1f); //입벌리고 기 모으는 시간
 
         //브레스 생성
+
         instanceBreath = Instantiate(breath, breathPort.position, breathPort.rotation);
         cameraS.Shake(4f, 0.01f);
 
@@ -213,6 +225,7 @@ public class Boss : MonoBehaviour
     {
         ChaseEnd();
         anim.SetTrigger("doRush");
+        rushClip.Play();
         float dirX = ((Vector2)target.position - rigid.position).normalized.x; //플레이어와 보스의 x벡터 구하기
         yield return new WaitForSeconds(1f);//준비시간
         isInvincible = true; //무적 활성화
@@ -236,6 +249,7 @@ public class Boss : MonoBehaviour
         //걷는 모션 제거, 플레이어를 향해서 이동만 허용
         ChaseEnd();
         isInvincible = true;
+        crushClip.Play();
         anim.SetTrigger("doTaunt");
         rigid.AddForce(Vector2.up * 700f);
         //충동범위 활성화
@@ -252,7 +266,7 @@ public class Boss : MonoBehaviour
         moveSpeed = 10f;
 
         yield return new WaitForSeconds(0.3f); //0.5초동안 플레이어쪽으로 이동
-
+        rumbleClip.Play();
         cameraS.Shake(0.5f, 0.05f); //카메라 흔들림 효과 shake(지속시간)
         isChase = false;
         meleeArea.enabled = true;

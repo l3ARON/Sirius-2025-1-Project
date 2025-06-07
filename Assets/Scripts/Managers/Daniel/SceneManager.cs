@@ -13,6 +13,7 @@ public class SceneManager : MonoBehaviour
     public Animator transitionAnim;
     public Camera myCamera;
     int temp;
+    public AudioManager audiomanagerscript;
 
     [SerializeField] Vector3 respawnPoint; //부활 좌표
     [SerializeField] int respawnstageIndex; //부활 스테이지
@@ -87,6 +88,11 @@ public class SceneManager : MonoBehaviour
         Debug.Log("Next Stage");
         stageIndex = temp/10;
         Stages[stageIndex].SetActive(true);
+        if (stageIndex == 4) //첫번째 보스 일시
+        {
+            audiomanagerscript.FirstBossSFX();
+            myCamera.transform.position = new Vector3(0, 4.5f, -10f);
+        }
     }
 
     void PlayerReposition()
@@ -105,6 +111,7 @@ public class SceneManager : MonoBehaviour
         stageIndex = respawnstageIndex;
         player.VelocityZero();
     }
+    
     // public void HealthDown()
     // {
     //     if (health > 0)
