@@ -112,33 +112,33 @@ public class SceneManager : MonoBehaviour
         player.VelocityZero();
     }
     
-    // public void HealthDown()
-    // {
-    //     if (health > 0)
-    //     {
-    //         health--;
-    //     }
-    //     else
-    //     {
-    //         //Player Die Effect
-    //         player.OnDie();
-    //         //Result UI
-    //         Debug.Log("Wasted");
-    //         //Retry Button UI
+    public void HealthDown()
+    {
+        if (health > 0)
+        {
+            health--;
+        }
+        else
+        {
+            //Player Die Effect
+            player.OnDie();
+            //Result UI
+            Debug.Log("Wasted");
+            //Retry Button UI
 
-    //     }
-    // }
+        }
+    }
 
-    // void OnTriggerEnter2D(Collider2D collision)
-    // {
-    //     if(collision.gameObject.tag == "Player") 
-    //     {   
-    //         if (health > 1)
-    //         {
-    //             PlayerReposition();
-    //         }
-    //         HealthDown();
-    //     }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Player") 
+        {   
+            if (health > 1)
+            {
+                PlayerReposition();
+            }
+            HealthDown();
+        }
         
-    // }  
+    }  
 }
