@@ -14,7 +14,7 @@ public class SmallEnemy : MonoBehaviour
     public float ySpeed = 1f;            // y축 시작 속도
     public float minRayLength = 2.3f;    // ground기준 최소 하강 높이
     public float maxRayLength = 4f;      // ground기준 최대 상승 높이
-
+    public GameObject hitFX;
     // 플레이어 감지 및 돌진 관련 변수
     public Transform player;
     public float detectionRadius = 3.8f;
@@ -26,7 +26,7 @@ public class SmallEnemy : MonoBehaviour
     private bool isMovementPaused = false;
     //사운드
     public AudioSource attacksoundClip;
-    void Start()
+    void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -82,6 +82,7 @@ public class SmallEnemy : MonoBehaviour
     // 데미지 처리
     public void TakeDamage(int damage)
     {
+
         currentHP -= damage;
         Debug.Log("몬스터 피해! 현재 HP: " + currentHP);
 

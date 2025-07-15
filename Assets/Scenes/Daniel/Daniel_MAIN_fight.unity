@@ -1861,6 +1861,7 @@ MonoBehaviour:
   ySpeed: 1
   minRayLength: 2.3
   maxRayLength: 4
+  hitFX: {fileID: 0}
   player: {fileID: 2005358181}
   detectionRadius: 3.8
   dashSpeed: 5
@@ -2055,6 +2056,7 @@ MonoBehaviour:
   ySpeed: 1
   minRayLength: 2.3
   maxRayLength: 4
+  hitFX: {fileID: 0}
   player: {fileID: 2005358181}
   detectionRadius: 3.8
   dashSpeed: 5
@@ -3138,6 +3140,7 @@ MonoBehaviour:
   ySpeed: 1
   minRayLength: 2.3
   maxRayLength: 4
+  hitFX: {fileID: 0}
   player: {fileID: 2005358181}
   detectionRadius: 3.8
   dashSpeed: 5
@@ -7250,11 +7253,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a491769208e263c4abeae879d8694efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 20
+  maxHP: 100
   xSpeed: 1
   ySpeed: 1
   minRayLength: 2.3
   maxRayLength: 4
+  hitFX: {fileID: 1967835574231978638, guid: 3e196c9e632c76841a71cb6e2dc6d010, type: 3}
   player: {fileID: 2005358181}
   detectionRadius: 3.8
   dashSpeed: 5
@@ -13529,6 +13533,7 @@ MonoBehaviour:
   ySpeed: 1
   minRayLength: 2.3
   maxRayLength: 4
+  hitFX: {fileID: 0}
   player: {fileID: 2005358181}
   detectionRadius: 3.8
   dashSpeed: 5
@@ -13723,6 +13728,7 @@ MonoBehaviour:
   ySpeed: 1
   minRayLength: 2.3
   maxRayLength: 4
+  hitFX: {fileID: 1967835574231978638, guid: 3e196c9e632c76841a71cb6e2dc6d010, type: 3}
   player: {fileID: 2005358181}
   detectionRadius: 3.8
   dashSpeed: 5
@@ -16370,7 +16376,7 @@ MonoBehaviour:
   attackDelay: 0.5
   attackPoint: {fileID: 125122946}
   attackRange: 1
-  attackDamage: 20
+  attackDamage: 5
   dashSpeed: 25
   dashDuration: 0.2
   dashCooldown: 0
