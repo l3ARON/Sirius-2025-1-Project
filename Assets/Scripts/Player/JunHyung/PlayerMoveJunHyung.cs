@@ -18,7 +18,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
     private float attackTimer = 0f;       // 남은 공격 시간 카운터
     public Transform attackPoint;         // 공격 판정 중심점 (손/무기 위치로 설정)
     public float attackRange = 1f;        // 공격 범위 반지름
-    public int attackDamage = 20;         // 적에게 줄 데미지
+    public int attackDamage = 5;         // 적에게 줄 데미지
     private HashSet<GameObject> damagedEnemies = new HashSet<GameObject>(); // 동일 공격 중 중복 타격 방지
 
     // ────────────── 대시 관련 변수 ──────────────

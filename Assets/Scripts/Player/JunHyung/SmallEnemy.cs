@@ -4,7 +4,7 @@ using UnityEngine;
 public class SmallEnemy : MonoBehaviour
 {
     // 체력 관련 변수
-    public int maxHP = 100;
+    [SerializeField] int maxHP = 100;
     private int currentHP;
 
     // 기본 이동 관련 변수
