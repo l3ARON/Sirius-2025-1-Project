@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 454914}
   - component: {fileID: 21225482}
+  - component: {fileID: 832588112760217806}
   m_Layer: 0
   m_Name: GG Red Mushroom_01
   m_TagString: Untagged
@@ -84,3 +85,101 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!60 &832588112760217806
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185458}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 3.13, y: 2.28}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.615, y: -0.87}
+      - {x: 0.60499996, y: -0.76}
+      - {x: 0.45499998, y: -0.56}
+      - {x: 0.415, y: -0.42999998}
+      - {x: 0.42499998, y: -0.28}
+      - {x: 0.465, y: -0.089999996}
+      - {x: 0.39499998, y: 0.049999997}
+      - {x: 0.39499998, y: 0.17}
+      - {x: 0.615, y: 0.17999999}
+      - {x: 0.92499995, y: 0.19999999}
+      - {x: 1.035, y: 0.22999999}
+      - {x: 1.175, y: 0.29}
+      - {x: 1.365, y: 0.34}
+      - {x: 1.4449999, y: 0.38}
+      - {x: 1.535, y: 0.47}
+      - {x: 1.535, y: 0.53999996}
+      - {x: 1.525, y: 0.58}
+      - {x: 1.4449999, y: 0.69}
+      - {x: 1.345, y: 0.78999996}
+      - {x: 1.045, y: 0.95}
+      - {x: 0.945, y: 0.97999996}
+      - {x: 0.805, y: 1.06}
+      - {x: 0.695, y: 1.1}
+      - {x: 0.53499997, y: 1.13}
+      - {x: 0.065, y: 1.13}
+      - {x: -0.295, y: 1.06}
+      - {x: -0.545, y: 1}
+      - {x: -0.675, y: 0.96}
+      - {x: -0.85499996, y: 0.95}
+      - {x: -1.015, y: 0.9}
+      - {x: -1.125, y: 0.84999996}
+      - {x: -1.475, y: 0.61}
+      - {x: -1.545, y: 0.5}
+      - {x: -1.545, y: 0.39}
+      - {x: -1.485, y: 0.32}
+      - {x: -1.2149999, y: 0.17}
+      - {x: -1.025, y: 0.12}
+      - {x: -0.835, y: 0.13}
+      - {x: -0.515, y: 0.17}
+      - {x: -0.415, y: 0.19}
+      - {x: -0.225, y: 0.22}
+      - {x: -0.235, y: 0}
+      - {x: -0.285, y: -0.14}
+      - {x: -0.275, y: -0.26}
+      - {x: -0.175, y: -0.53}
+      - {x: -0.16499999, y: -0.77}
+      - {x: -0.185, y: -0.87}
+      - {x: -0.125, y: -1}
+      - {x: 0.074999996, y: -1.14}
+      - {x: 0.24499999, y: -1.14}
+      - {x: 0.325, y: -1.13}
+      - {x: 0.445, y: -1.0699999}
+      - {x: 0.53499997, y: -0.96999997}
+  m_UseDelaunayMesh: 0
