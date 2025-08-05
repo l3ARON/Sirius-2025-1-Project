@@ -4,9 +4,9 @@ using UnityEngine;
 public class SmallEnemy : MonoBehaviour
 {
     // 체력 관련 변수
-    [SerializeField] int maxHP = 100;
+    [SerializeField] int maxHP = 20;
     private int currentHP;
-
+    public GameObject hitPrefab;
     // 기본 이동 관련 변수
     private Rigidbody2D rigid;
     private SpriteRenderer spriteRenderer;
@@ -14,7 +14,6 @@ public class SmallEnemy : MonoBehaviour
     public float ySpeed = 1f;            // y축 시작 속도
     public float minRayLength = 2.3f;    // ground기준 최소 하강 높이
     public float maxRayLength = 4f;      // ground기준 최대 상승 높이
-    public GameObject hitFX;
     // 플레이어 감지 및 돌진 관련 변수
     public Transform player;
     public float detectionRadius = 3.8f;
@@ -81,8 +80,7 @@ public class SmallEnemy : MonoBehaviour
 
     // 데미지 처리
     public void TakeDamage(int damage)
-    {
-
+    {      
         currentHP -= damage;
         Debug.Log("몬스터 피해! 현재 HP: " + currentHP);
 
@@ -95,6 +93,7 @@ public class SmallEnemy : MonoBehaviour
 
     void Die()
     {
+        Instantiate(hitPrefab, transform.position, transform.rotation);
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {

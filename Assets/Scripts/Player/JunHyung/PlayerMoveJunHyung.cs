@@ -7,6 +7,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
     Rigidbody2D rigid;                    // 물리 연산을 위한 Rigidbody2D 참조
     SpriteRenderer spriteRenderer;        // 캐릭터 방향 좌우 반전을 위한 SpriteRenderer
     Animator anim;                        // 애니메이션 전환을 위한 Animator
+    public GameObject slashPrefab;         //슬래쉬 fx
 
     // ────────────── 이동 & 점프 관련 변수 ──────────────
     public float maxSpeed;                 // 걷기 최대 속도
@@ -18,7 +19,7 @@ public class PlayerMoveJunHyung : MonoBehaviour
     private float attackTimer = 0f;       // 남은 공격 시간 카운터
     public Transform attackPoint;         // 공격 판정 중심점 (손/무기 위치로 설정)
     public float attackRange = 1f;        // 공격 범위 반지름
-    public int attackDamage = 5;         // 적에게 줄 데미지
+    public int attackDamage = 20;         // 적에게 줄 데미지
     private HashSet<GameObject> damagedEnemies = new HashSet<GameObject>(); // 동일 공격 중 중복 타격 방지
 
     // ────────────── 대시 관련 변수 ──────────────
@@ -163,6 +164,10 @@ public class PlayerMoveJunHyung : MonoBehaviour
             }
             else
             {
+                float slashdirection = spriteRenderer.flipX ? 0f : 180f;
+                Quaternion slashRotation = Quaternion.Euler(slashdirection, 0, slashdirection);
+                Instantiate(slashPrefab, transform.position, slashRotation);
+                Debug.Log("slash rotation: " + slashRotation);
                 // 🗡️ 근접 공격
                 attackClip.Play();
                 isAttacking = true;

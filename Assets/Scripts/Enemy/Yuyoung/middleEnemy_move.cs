@@ -41,7 +41,7 @@ public class middleEnemyMove : MonoBehaviour
         // 감지 범위 안에 타겟이 있을 경우 → 해당 방향으로 이동
         if (IsTargetInRange() && player != null)
         {
-            Debug.Log("감지!!");
+            //Debug.Log("감지!!");
             barkClip.Play();
             float direction = Mathf.Sign(player.position.x - transform.position.x); // 방향 결정 (+/-1)
             xSpeed = Mathf.Abs(xSpeedToFollow) * direction; // 방향에 따라 속도 부호 결정
@@ -52,7 +52,7 @@ public class middleEnemyMove : MonoBehaviour
         // 좁은 범위 안에 플레이어가 있을 경우 로그 출력
         if (IsPlayerVeryClose())
         {
-            Debug.Log("플레이어가 가까이 있음!");
+            //Debug.Log("플레이어가 가까이 있음!");
             xSpeed = 0;
         }
 
