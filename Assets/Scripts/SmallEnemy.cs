@@ -97,7 +97,7 @@ public class SmallEnemy : MonoBehaviour
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
-            var pm = player.GetComponent<PlayerMoveJunHyung>();
+            var pm = player.GetComponent<PlayerAttack2D>();
             if (pm != null)
             {
                 pm.EnableNextRangedAttack(); // 다음 공격을 원거리로 설정

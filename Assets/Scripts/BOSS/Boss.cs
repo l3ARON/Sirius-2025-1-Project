@@ -41,7 +41,7 @@ public class Boss : MonoBehaviour
     public AudioSource rushClip; //돌진
     public AudioSource flameClip; //분출
     public AudioSource growlClip; //으르렁 소리
-    private float growlChance = 0.25f; //으르렁 거릴 확률
+    // private float growlChance = 0.25f; //으르렁 거릴 확률
     public AudioSource rumbleClip; //흔들리는 소리
     void Start()
     {
