@@ -8,6 +8,7 @@ TagManager:
   - Boss_Bullet
   - MoveStage
   - Enemy
+  - RespawnTag
   layers:
   - Default
   - TransparentFX
@@ -20,11 +21,11 @@ TagManager:
   - flatform
   - 
   - 
-  - 
+  - playerhurt
   - boss
   - bossDeath
   - bossBreath
-  - 
+  - Hit
   - 
   - 
   - 

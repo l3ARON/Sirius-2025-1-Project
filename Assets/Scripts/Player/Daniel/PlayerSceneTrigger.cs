@@ -53,6 +53,8 @@ public class PlayerSceneTrigger : MonoBehaviour
 
     void OnDamaged(Vector2 targetPos)
     {
+        // Debug.Log("Target: " + targetPos.x);
+        // Debug.Log("Player: " + transform.position.x);
         //HP Down
         gameManager.HealthDown();
 
@@ -61,10 +63,12 @@ public class PlayerSceneTrigger : MonoBehaviour
         spriteRender.color = new Color(1,1,1,0.4f);
         //reaction Force
         int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1;
-        rigid.AddForce(new Vector2(dirc,1)*7, ForceMode2D.Impulse);
+        Debug.Log("dirc: " + dirc);
+        rigid.velocity = Vector2.zero;
+        rigid.AddForce(new Vector2(dirc,1)*10, ForceMode2D.Impulse);
         
         Invoke("OffDamaged",3);
-    }
+    } 
 
     void OffDamaged()
     {
@@ -74,11 +78,11 @@ public class PlayerSceneTrigger : MonoBehaviour
 
     public void OnDie()
     {
-        spriteRender.color = new Color(1,1,1,0.4f);
+        // spriteRender.color = new Color(1,1,1,0.4f);
         //Flip Y
         // spriteRender.flipY = true;
         // //Collider Disable
-        // colli.enabled = false;
+        //colli.enabled = false;
         // //Die Effect Jump
         // rigid.AddForce(Vector2.up * 5, ForceMode2D.Impulse); 
     }
