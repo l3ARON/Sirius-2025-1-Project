@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/CameraController.cs.meta
 guid: b9957d7afd1358d4298092d5817577d5
+========
+guid: 0910cdac372ab7a4ea3fec380f3befdc
+>>>>>>>> develop:Assets/Scripts/Enemy/Daniel/Enemyhit.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
