@@ -20,6 +20,10 @@ public class PlayerAttack2D : MonoBehaviour
     private float rangedAttackTimer = 0f;
     private bool isNextAttackRanged = false;
 
+    [Header("FX")]
+    public GameObject slashPrefab;      // 근접 공격 슬라이스 이펙트
+    public float slashOffset = 0.5f;    // 플레이어 앞쪽으로 얼마만큼 띄울지
+
     PlayerRefs refs;
 
     void Start()
@@ -60,16 +64,35 @@ public class PlayerAttack2D : MonoBehaviour
 
     // 근접 공격 시작
     void DoMeleeAttack()
-    {
-        isAttacking = true;
-        attackTimer = attackDelay;
-        damagedEnemies.Clear();
+{
+    isAttacking = true;
+    attackTimer = attackDelay;
+    damagedEnemies.Clear();
 
-        if (refs.anim != null)
-            refs.anim.SetBool("isAttack", true);
-        if (refs.attackClip != null)
-            refs.attackClip.Play();
+    if (refs.anim != null)
+        refs.anim.SetBool("isAttack", true);
+    if (refs.attackClip != null)
+        refs.attackClip.Play();
+
+    // 🔥 슬라이스 이펙트 생성 + 자동 삭제
+    if (slashPrefab != null)
+    {
+        float dir = refs.spriteRenderer != null && refs.spriteRenderer.flipX ? 1f : -1f;
+
+        Vector3 basePos = refs.attackPoint != null
+            ? refs.attackPoint.position
+            : transform.position;
+
+        Vector3 spawnPos = basePos + Vector3.right * (-dir) * slashOffset;
+        float yRot = (refs.spriteRenderer != null && refs.spriteRenderer.flipX) ? 0f : 180f;
+        Quaternion rot = Quaternion.Euler(0, yRot, 0);
+
+        GameObject slash = Instantiate(slashPrefab, spawnPos, rot);
+
+        // 👉 애니메이션 길이에 맞춰 적당히 0.3 ~ 0.5f 정도로
+        Destroy(slash, 0.4f);
     }
+}
 
     // 원거리 공격 실행
     void DoRangedAttack()
