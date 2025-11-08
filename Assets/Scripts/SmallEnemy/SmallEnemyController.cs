@@ -51,7 +51,7 @@ public class SmallEnemyController : MonoBehaviour
         }
 
         // 이펙트 있으면 여기서 Instantiate
-        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        // Instantiate(deathEffect, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
     }
