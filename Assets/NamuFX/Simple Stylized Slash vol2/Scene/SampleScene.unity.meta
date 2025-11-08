@@ -1,5 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/2DForestPastelArtPack.meta
+guid: 7d5799f6f9219794da224d644f3ea770
+folderAsset: yes
+========
 guid: 4645d20b1045e58498792c69109d3621
+>>>>>>>> develop:Assets/NamuFX/Simple Stylized Slash vol2/Scene/SampleScene.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

@@ -6747,7 +6747,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.270487, y: 2.65215, z: -10}
+  m_LocalPosition: {x: 3.7762372, y: 2.6478999, z: -10}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16082,8 +16082,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0c2930d7129b40a5439998f2639bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneManager: {fileID: 338728189}
-  gameManager: {fileID: 338728190}
+  rigid: {fileID: 0}
+  sceneManager: {fileID: 0}
+  spriteRender: {fileID: 0}
+  gameManager: {fileID: 0}
   dashScript: {fileID: 0}
 --- !u!114 &2005358186
 MonoBehaviour:
@@ -16097,21 +16099,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35f2a4e216bae824abf9edc2a15982bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rigid: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  anim: {fileID: 0}
   slashPrefab: {fileID: 2952244539869406566, guid: f817b6a772405114399284d23d8f0224, type: 3}
   maxSpeed: 10
-  jumpPower: 25
+  jumpPower: 0
+  isAttacking: 0
   attackDelay: 0.5
+  attackTimer: 0
   attackPoint: {fileID: 125122946}
   attackRange: 1
   attackDamage: 20
-  dashSpeed: 25
+  dashSpeed: 15
   dashDuration: 0.2
-  dashCooldown: 0
-  attackClip: {fileID: 2005358187}
-  dashClip: {fileID: 2005358188}
-  walkClip: {fileID: 2005358190}
+  isDashing: 0
+  dashTimer: 0
+  dashCooldown: 5
+  lastDashTime: -999
+  isCooldown: 0
+  attackClip: {fileID: 0}
+  dashClip: {fileID: 0}
+  walkClip: {fileID: 0}
+  isNextAttackRanged: 0
   rangedAttackDelay: 0.5
-  longRangeAttackPrefab: {fileID: 3816647789555381045, guid: 7a9ca1fea0d504842aa05748cb9f830b, type: 3}
+  rangedAttackTimer: 0
+  longRangeAttackPrefab: {fileID: 1375958096}
   firePoint: {fileID: 1375958097}
 --- !u!82 &2005358187
 AudioSource:
