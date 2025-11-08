@@ -3,7 +3,7 @@ using UnityEngine;
 public class SlashHit : MonoBehaviour
 {
     private PlayerAttack2D playerAttack;
-    private bool hasHit = false;
+    // private bool hasHit = false;
 
     void Awake()
     {

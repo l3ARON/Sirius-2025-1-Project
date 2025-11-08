@@ -36,10 +36,22 @@ public class SmallEnemyController : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("[SmallEnemyController] 적 사망");
+        Debug.Log("[SmallEnemy] 사망");
 
-        if (deathEffect != null)
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        // 🔥 여기서 플레이어에게 '다음 공격은 원거리' 플래그 주기
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            PlayerAttack2D pa = playerObj.GetComponent<PlayerAttack2D>();
+            if (pa != null)
+            {
+                pa.EnableNextRangedAttack();
+                Debug.Log("[SmallEnemy] 다음 공격은 원거리로 전환!");
+            }
+        }
+
+        // 이펙트 있으면 여기서 Instantiate
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
     }
