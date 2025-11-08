@@ -116,42 +116,47 @@ public class PlayerAttack2D : MonoBehaviour
         Debug.Log("🎯 원거리 공격 발사");
     }
 
-    // 근접 공격이 진행 중일 때 범위 내 적에게 데미지 주기
+    // 근접 공격이 진행 중일 때
     void HandleMeleeProgress()
     {
         if (!isAttacking) return;
 
         attackTimer -= Time.deltaTime;
 
-        // 공격 범위 검색
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(refs.attackPoint.position, attackRange);
-        foreach (Collider2D collider in hitColliders)
-        {
-            if (collider.CompareTag("Enemy") && !damagedEnemies.Contains(collider.gameObject))
-            {
-                // Enemy에 TakeDamage가 있으면 호출
-                var components = collider.GetComponents<MonoBehaviour>();
-                foreach (var component in components)
-                {
-                    var method = component.GetType().GetMethod("TakeDamage");
-                    if (method != null)
-                    {
-                        method.Invoke(component, new object[] { attackDamage });
-                        damagedEnemies.Add(collider.gameObject);
-                        Debug.Log($"💥 {collider.gameObject.name}에게 {attackDamage} 데미지!");
-                        break;
-                    }
-                }
-            }
-        }
-
-        // 공격 끝나면 초기화
+        // 공격 끝나면 애니메이션 끄기
         if (attackTimer <= 0)
         {
             isAttacking = false;
-            damagedEnemies.Clear();
             if (refs.anim != null)
                 refs.anim.SetBool("isAttack", false);
         }
     }
+
+    public void DealDamageToEnemy(GameObject enemy)
+    {
+        Debug.Log("gkatnghcnf, target = " + enemy.name);
+        if (enemy == null) return;
+
+        // 부모까지 포함해서 TakeDamage 찾기
+        var components = enemy.GetComponentsInParent<MonoBehaviour>();
+        bool found = false;
+
+        foreach (var component in components)
+        {
+            var method = component.GetType().GetMethod("TakeDamage");
+            if (method != null)
+            {
+                method.Invoke(component, new object[] { attackDamage });
+                Debug.Log($"💥 (SlashHit) {component.gameObject.name}에게 {attackDamage} 데미지!");
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            Debug.LogWarning($"[DealDamageToEnemy] {enemy.name} 및 부모에서 TakeDamage 찾지 못함");
+        }
+    }
+
 }

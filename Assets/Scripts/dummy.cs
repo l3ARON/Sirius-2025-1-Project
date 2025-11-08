@@ -13,6 +13,7 @@ public class dummy : MonoBehaviour
 
     public void TakeDamage(int dmg)
     {
+        Debug.Log("???");
         currentHP -= dmg;
         Debug.Log($"[SmallEnemyController] 피격! HP: {currentHP}/{maxHP}");
 

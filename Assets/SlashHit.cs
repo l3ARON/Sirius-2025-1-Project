@@ -1,20 +1,23 @@
 using UnityEngine;
 
-/// <summary>
-/// 슬래시 프리팹이 Enemy와 충돌했을 때 로그 출력 (Player는 무시)
-/// </summary>
 public class SlashHit : MonoBehaviour
 {
+    private PlayerAttack2D playerAttack;
+    private bool hasHit = false;
+
+    void Awake()
+    {
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+            playerAttack = playerObj.GetComponent<PlayerAttack2D>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Player 태그는 무시
-        if (collision.CompareTag("Player"))
-            return;
-
-        // Enemy 태그만 로그 출력
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Enemy") && playerAttack != null)
         {
-            Debug.Log($"[SlashHit] Enemy hit! → {collision.name}");
+            playerAttack.DealDamageToEnemy(collision.gameObject);
+            Debug.Log(collision.gameObject);
         }
     }
 }
