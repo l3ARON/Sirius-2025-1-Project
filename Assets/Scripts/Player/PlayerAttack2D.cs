@@ -9,7 +9,7 @@ public class PlayerAttack2D : MonoBehaviour
     [Header("Melee")]
     public float attackDelay = 0.5f;    // 공격 지속 시간
     public float attackRange = 1f;      // 근접 공격 범위
-    public int attackDamage = 20;       // 데미지
+    public int attackDamage = 1;       // 데미지
     private bool isAttacking = false;
     private float attackTimer = 0f;
     private HashSet<GameObject> damagedEnemies = new HashSet<GameObject>();
@@ -64,35 +64,35 @@ public class PlayerAttack2D : MonoBehaviour
 
     // 근접 공격 시작
     void DoMeleeAttack()
-{
-    isAttacking = true;
-    attackTimer = attackDelay;
-    damagedEnemies.Clear();
-
-    if (refs.anim != null)
-        refs.anim.SetBool("isAttack", true);
-    if (refs.attackClip != null)
-        refs.attackClip.Play();
-
-    // 🔥 슬라이스 이펙트 생성 + 자동 삭제
-    if (slashPrefab != null)
     {
-        float dir = refs.spriteRenderer != null && refs.spriteRenderer.flipX ? 1f : -1f;
+        isAttacking = true;
+        attackTimer = attackDelay;
+        damagedEnemies.Clear();
 
-        Vector3 basePos = refs.attackPoint != null
-            ? refs.attackPoint.position
-            : transform.position;
+        if (refs.anim != null)
+            refs.anim.SetBool("isAttack", true);
+        if (refs.attackClip != null)
+            refs.attackClip.Play();
 
-        Vector3 spawnPos = basePos + Vector3.right * (-dir) * slashOffset;
-        float yRot = (refs.spriteRenderer != null && refs.spriteRenderer.flipX) ? 0f : 180f;
-        Quaternion rot = Quaternion.Euler(0, yRot, 0);
+        // 🔥 슬라이스 이펙트 생성 + 자동 삭제
+        if (slashPrefab != null)
+        {
+            float dir = refs.spriteRenderer != null && refs.spriteRenderer.flipX ? 1f : -1f;
 
-        GameObject slash = Instantiate(slashPrefab, spawnPos, rot);
+            Vector3 basePos = refs.attackPoint != null
+                ? refs.attackPoint.position
+                : transform.position;
 
-        // 👉 애니메이션 길이에 맞춰 적당히 0.3 ~ 0.5f 정도로
-        Destroy(slash, 0.4f);
+            Vector3 spawnPos = basePos + Vector3.right * (-dir) * slashOffset;
+            float yRot = (refs.spriteRenderer != null && refs.spriteRenderer.flipX) ? 0f : 180f;
+            Quaternion rot = Quaternion.Euler(0, yRot, 0);
+
+            GameObject slash = Instantiate(slashPrefab, spawnPos, rot);
+
+            // 👉 애니메이션 길이에 맞춰 적당히 0.3 ~ 0.5f 정도로
+            Destroy(slash, 0.4f);
+        }
     }
-}
 
     // 원거리 공격 실행
     void DoRangedAttack()
@@ -153,13 +153,5 @@ public class PlayerAttack2D : MonoBehaviour
             if (refs.anim != null)
                 refs.anim.SetBool("isAttack", false);
         }
-    }
-
-    // 에디터에서 공격 범위 보이게
-    void OnDrawGizmosSelected()
-    {
-        if (refs == null || refs.attackPoint == null) return;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(refs.attackPoint.position, attackRange);
     }
 }
