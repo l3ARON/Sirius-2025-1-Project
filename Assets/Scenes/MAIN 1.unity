@@ -1601,11 +1601,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3115462623177018214, guid: 7f73abd6f5b44ff4c9ff9c92642c7ff3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 29.9
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 3115462623177018214, guid: 7f73abd6f5b44ff4c9ff9c92642c7ff3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5
+      value: 10.7
       objectReference: {fileID: 0}
     - target: {fileID: 3115462623177018214, guid: 7f73abd6f5b44ff4c9ff9c92642c7ff3, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3068,6 +3068,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1842664757088339393, guid: d3b6eb4fc47cb584b9e85c0781984755, type: 3}
   m_PrefabInstance: {fileID: 1370355702701235589}
+  m_PrefabAsset: {fileID: 0}
+--- !u!61 &818962139 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6168040490481215428, guid: fbece22e2c4ac8141b2d3e5486574e54, type: 3}
+  m_PrefabInstance: {fileID: 1792840033544941347}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &820149702 stripped
 Transform:
@@ -5049,15 +5054,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stages:
-  - {fileID: 1748827314}
   - {fileID: 286568553}
   - {fileID: 124688296}
   - {fileID: 1210098241}
+  - {fileID: 1748827314}
   spawnPoints:
-  - {fileID: 155308044}
   - {fileID: 1672533286}
   - {fileID: 1536142356}
   - {fileID: 494148941}
+  - {fileID: 155308044}
   player: {fileID: 363574403}
   delay: 0
   fadeInTime: 0.5
@@ -5726,8 +5731,8 @@ MonoBehaviour:
   afterSlamWait: 1
   jumpClip: {fileID: 0}
   slamClip: {fileID: 0}
-  breathPrefab: {fileID: 0}
-  breathPort: {fileID: 0}
+  breathPrefab: {fileID: 8397554695301826871, guid: 47cfc255b149ac0449f1097aa7e3fbdb, type: 3}
+  breathPort: {fileID: 2140156648}
   breathWindup: 1
   breathDuration: 4
   breathClip: {fileID: 0}
@@ -5748,7 +5753,7 @@ MonoBehaviour:
   detectRange: 7
   slamRange: 5
   breathRange: 9
-  meleeArea: {fileID: 0}
+  meleeArea: {fileID: 818962139}
   cameraShake: {fileID: 0}
   growlClip: {fileID: 0}
   patterns: {fileID: 0}
@@ -7883,6 +7888,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a348d82efd958e4e9a223fad6c212cc, type: 3}
+--- !u!4 &2140156648 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4226804889960932438, guid: fbece22e2c4ac8141b2d3e5486574e54, type: 3}
+  m_PrefabInstance: {fileID: 1792840033544941347}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2142251867 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 428918, guid: 44cb384b0e6a41945be089c06cbb087c, type: 3}
@@ -7906,7 +7916,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1253035821264556097, guid: d3b6eb4fc47cb584b9e85c0781984755, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1964357348799596103, guid: d3b6eb4fc47cb584b9e85c0781984755, type: 3}
       propertyPath: m_LocalScale.x
@@ -7993,7 +8003,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 383071705011628429, guid: fbece22e2c4ac8141b2d3e5486574e54, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 563640724613337006, guid: fbece22e2c4ac8141b2d3e5486574e54, type: 3}
       propertyPath: m_Layer
@@ -8397,7 +8407,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5790395972637745855, guid: 65e7888ce49187447a71861d4998840a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6182776510659727401, guid: 65e7888ce49187447a71861d4998840a, type: 3}
       propertyPath: m_LocalPosition.x
