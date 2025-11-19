@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: OurEnemy
+  m_Shader: {fileID: 4800000, guid: ba9ee345a125e3b428d0a6dd1032c7bc, type: 3}
+  m_Parent: {fileID: 2100000, guid: f3a1ef7ee5ea4a44d900f51d053ee73c, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _OutlineSize: 2
+    m_Colors:
+    - _OutlineColor: {r: 0, g: 1, b: 0.9784224, a: 1}
+  m_BuildTextureStacks: []

@@ -1354,6 +1354,7 @@ MonoBehaviour:
   invincibleTime: 0.8
   blinkInterval: 0.1
   knockbackPower: 6
+  friendlyMaterial: {fileID: 2100000, guid: 635ca160c451ecc40a7d0010cf315be8, type: 2}
   isFriendly: 0
 --- !u!114 &186887515
 MonoBehaviour:
@@ -1378,7 +1379,7 @@ MonoBehaviour:
   cooldown: 0
   hitStartTime: 0.3
   hitWindow: 0.2
-  slashPrefab: {fileID: 2952244539869406566, guid: 0f589a4a9e85b2b4d98336dbccca0ec4, type: 3}
+  slashPrefab: {fileID: 0}
   slashOffset: {x: 2.5, y: 0}
   slashLifeTime: 0.4
   isAttacking: 0

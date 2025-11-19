@@ -127,7 +127,7 @@ public class MiddleEnemyMovement : MonoBehaviour
         
         // 아군이거나 플레이어 감지되면 Run 상태
         bool runCondition = isFriendlyMode ? isMoving : DetectPlayerBox();
-        anim.SetBool("isRun", isMoving && runCondition);
+        checkmove(isMoving, runCondition);
     }
 
     bool DetectPlayerBox()
@@ -142,5 +142,10 @@ public class MiddleEnemyMovement : MonoBehaviour
     {
         Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
         Gizmos.DrawCube(transform.position, new Vector3(detectWidth, detectHeight, 1));
+    }
+
+    void checkmove(bool isMoving, bool runCondition){
+        anim.SetBool("isRun", isMoving && runCondition);
+        anim.SetBool("isWalk", !(isMoving && runCondition));
     }
 }

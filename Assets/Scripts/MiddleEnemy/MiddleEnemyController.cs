@@ -13,6 +13,9 @@ public class MiddleEnemyController : MonoBehaviour
     public float blinkInterval = 0.1f;
     public float knockbackPower = 4f;
 
+    [Header("아군 전환 설정")]
+    public Material friendlyMaterial; // 👈 여기에 인스펙터에서 '아군용 머티리얼'을 넣으세요!
+
     // 컴포넌트 참조
     MiddleEnemyAttack attack;
     MiddleEnemyMovement movement;
@@ -62,9 +65,6 @@ public class MiddleEnemyController : MonoBehaviour
         ApplyDamage(dmg, true, transform.position);
     }
 
-    
-
-
     IEnumerator HitEffectRoutine(Vector2 hitPos)
     {
         isInvincible = true;
@@ -105,30 +105,44 @@ public class MiddleEnemyController : MonoBehaviour
         Debug.Log("🛡️ [패링 성공] 몬스터가 아군으로 전환됩니다!");
         isFriendly = true;
         isInvincible = false;
-        StopAllCoroutines(); // 피격 루틴 중단
+        StopAllCoroutines(); 
 
         // 공격 기능 끄기
         if (attack != null)
         {
-            attack.ForceStopAttack(); // 하던 공격 멈춤
-            attack.enabled = false;   // 스크립트 비활성화
+            attack.ForceStopAttack();
+            attack.enabled = false;
         }
 
         // 이동을 아군 모드로 변경
         if (movement != null) movement.SetFriendlyMode();
 
-        // 비주얼 변경 (파란색)
+        // 🔥 비주얼 변경 (머티리얼 교체)
         if (sprite != null) 
         {
             sprite.enabled = true;
-            sprite.color = new Color(0.5f, 0.8f, 1f);
+
+            // 1. 머티리얼 교체
+            if (friendlyMaterial != null)
+            {
+                sprite.material = friendlyMaterial;
+            }
+            else
+            {
+                Debug.LogWarning("아군용 머티리얼(Friendly Material)이 할당되지 않았습니다!");
+            }
+
+            // 2. 색상 초기화 (중요!)
+            // 기존에 피격 등으로 색이 변해있거나, 위 코드처럼 파란색 틴트를 섞는 게 아니라면
+            // 머티리얼 본연의 느낌을 살리기 위해 흰색(기본)으로 돌려주는 게 좋습니다.
+            sprite.color = Color.white; 
         }
 
-        // 태그/레이어 변경 (플레이어 공격 안 맞게)
+        // 태그/레이어 변경
         gameObject.tag = "Untagged";
         gameObject.layer = LayerMask.NameToLayer("Default"); 
     }
-
+    
     void Die()
     {
         if (movement != null) movement.PauseMovement();
