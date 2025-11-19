@@ -1,64 +1,75 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// 중형 몬스터 2차 근접 공격 + 패링 타이밍
-/// Idle/Walk/Run → ready → attack → Idle
-/// </summary>
 public class MiddleEnemyAttack : MonoBehaviour
 {
-    [Header("2차 공격 범위")]
-    public float closeRange = 2f;          // 공격 발동 범위
+    [Header("범위 설정")]
+    public Vector2 hitBoxSize = new Vector2(3f, 1.5f);
+    public Vector2 hitBoxOffset = new Vector2(1f, 0f);
+    public LayerMask playerMask;
 
-    [Header("공격 설정")]
-    public float windUpTime = 0.8f;        // ready 상태로 준비하는 시간
-    public float dashSpeed = 6f;           // 돌진 속도
-    public float dashDuration = 1.0f;      // 돌진 유지 시간
-    public float cooldown = 0f;            // 공격 후 대기 시간 (0이면 바로 다음 공격 가능)
+    [Header("공격 타이밍")]
+    public float windUpTime = 0.8f;    
+    public float dashSpeed = 6f;       
+    public float dashDuration = 0.5f;  
+    public float cooldown = 1.0f;      
 
-    [Header("히트/패링 타이밍")]
-    [Tooltip("돌진 시작 후 몇 초 뒤에 실제 타격 판정을 열지")]
-    public float hitStartTime = 0.3f;
-    [Tooltip("실제 타격이 유효한 시간 (패링 타이밍 길이)")]
-    public float hitWindow = 0.2f;
+    [Header("타격 타이밍")]
+    public float hitStartTime = 0.1f;  
+    public float hitWindow = 0.3f;     
 
-    [Header("데미지")]
-    public int damage = 1;
+    [Header("이펙트")]
+    public GameObject slashPrefab;
+    public Vector2 slashOffset = new Vector2(1f, 0f);
+    public float slashLifeTime = 0.4f;
 
+    // 컴포넌트 & 상태
     Transform player;
     Rigidbody2D rigid;
     MiddleEnemyMovement move;
-    MiddleEnemyController controller;
     Animator anim;
 
-    [HideInInspector] public bool isAttacking = false; // 전체 공격 루틴 중인지
-    bool canHitPlayer = false;                         // 실제로 데미지 줄 수 있는 타이밍인지
+    [HideInInspector] public bool isAttacking = false;
+    private bool canHitPlayer = false; 
+    public bool CanHitPlayer => canHitPlayer;
 
     void Awake()
     {
-        rigid      = GetComponent<Rigidbody2D>();
-        move       = GetComponent<MiddleEnemyMovement>();
-        controller = GetComponent<MiddleEnemyController>();
-        anim       = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody2D>();
+        move  = GetComponent<MiddleEnemyMovement>();
+        anim  = GetComponent<Animator>();
     }
 
     void Start()
     {
-        var p = GameObject.FindWithTag("Player");
+        GameObject p = GameObject.FindWithTag("Player");
         if (p != null) player = p.transform;
     }
 
     void Update()
     {
-        if (isAttacking) return;
-        if (player == null) return;
+        // 스크립트가 꺼져있거나(아군), 이미 공격중이거나, 플레이어가 없으면 리턴
+        if (!this.enabled || isAttacking || player == null) return;
 
-        float dist = Vector2.Distance(transform.position, player.position);
-
-        // 2차 근접 범위 안에 들어오면 공격 시작
-        if (dist <= closeRange)
+        if (IsPlayerInHitBox())
         {
             StartCoroutine(AttackRoutine());
+        }
+    }
+
+    // 🔥 Controller에서 호출: 피격/패링 시 공격 강제 중단
+    public void ForceStopAttack()
+    {
+        StopAllCoroutines();
+        isAttacking = false;
+        canHitPlayer = false;
+
+        if (rigid != null) rigid.velocity = Vector2.zero;
+        
+        if (anim != null)
+        {
+            anim.SetBool("isReady", false);
+            anim.SetBool("isAttack", false);
         }
     }
 
@@ -67,122 +78,105 @@ public class MiddleEnemyAttack : MonoBehaviour
         isAttacking = true;
         canHitPlayer = false;
 
-        // 0️⃣ 이동 멈추기
-        if (move != null)
-            move.PauseMovement();
+        // 1. 준비
+        move?.PauseMovement();
         rigid.velocity = Vector2.zero;
 
-        // 1️⃣ ready 애니메이션으로 준비 (isReady = true)
-        if (anim != null)
-        {
-            anim.SetBool("isWalk", false);
-            anim.SetBool("isRun",  false);
-            anim.SetBool("isAttack", false);
-            anim.SetBool("isReady",  true);   // ← ready 상태로 진입
-        }
+        anim?.SetBool("isWalk", false);
+        anim?.SetBool("isRun", false);
+        anim?.SetBool("isReady", true);
 
-        // ready 애니메이션 동안 대기 (텔레그래프 + 패링 준비 시간)
         yield return new WaitForSeconds(windUpTime);
 
-        if (player == null)
+        // 2. 공격 시작
+        anim?.SetBool("isReady", false);
+        anim?.SetBool("isAttack", true);
+
+        CreateSlashEffect();
+
+        // 3. 돌진
+        if (player != null)
         {
-            EndAttack();
-            isAttacking = false;
-            yield break;
+            Vector2 dir = (player.position - transform.position).normalized;
+            rigid.velocity = dir * dashSpeed;
         }
 
-        // 2️⃣ ready 종료, 실제 공격 애니로 전환
-        if (anim != null)
-        {
-            anim.SetBool("isReady",  false);
-            anim.SetBool("isAttack", true);   // Animator에서 ready → wolf_attack 전이는 Exit Time=1로!
-        }
-
-        // 3️⃣ 돌진 시작
-        Vector2 dir = (player.position - transform.position).normalized;
-        rigid.velocity = dir * dashSpeed;
-
+        // 4. 히트 윈도우
         float elapsed = 0f;
-        canHitPlayer = false;
-
-        // 4️⃣ 돌진 전체 시간 동안 진행 + 그 안에서 일부만 유효타임
         while (elapsed < dashDuration)
         {
-            // hitStartTime ~ hitStartTime+hitWindow 구간 안에서만 판정 ON
             if (elapsed >= hitStartTime && elapsed <= hitStartTime + hitWindow)
-            {
-                canHitPlayer = true;   // 이 구간이 패링 타이밍
-            }
+                canHitPlayer = true;
             else
-            {
                 canHitPlayer = false;
-            }
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // 5️⃣ 돌진 종료
+        // 5. 종료
         rigid.velocity = Vector2.zero;
-        EndAttack();   // 애니 상태만 정리 (이동 재개는 여기서 안 함)
-
-        // 6️⃣ 쿨타임 (0이면 그냥 바로 넘어감)
-        if (cooldown > 0f)
-            yield return new WaitForSeconds(cooldown);
-
+        anim?.SetBool("isAttack", false);
         canHitPlayer = false;
+
+        if (cooldown > 0f) yield return new WaitForSeconds(cooldown);
+
         isAttacking = false;
 
-        // 7️⃣ 공격이 끝난 후, 아직 범위 안에 플레이어가 있으면 다시 ready → attack
-        if (player != null)
-        {
-            float dist = Vector2.Distance(transform.position, player.position);
-
-            if (dist <= closeRange)
-            {
-                // 다시 공격 루틴 시작 (ready부터)
-                StartCoroutine(AttackRoutine());
-                yield break;
-            }
-        }
-
-        // 여기까지 왔다는 건 플레이어가 범위 밖 → 순찰 재개
-        if (move != null)
-            move.ResumeMovement();
+        // 6. 반복 결정
+        if (IsPlayerInHitBox())
+            StartCoroutine(AttackRoutine());
+        else
+            move?.ResumeMovement();
     }
 
-    void EndAttack()
+    void CreateSlashEffect()
     {
-        if (anim != null)
-        {
-            anim.SetBool("isAttack", false);
-            anim.SetBool("isReady",  false);
-        }
-        // ❗ 여기서는 movement 재개하지 않음
+        if (slashPrefab == null) return;
+
+        // 몬스터의 Scale.x를 기준으로 방향 판단 (양수:오른쪽, 음수:왼쪽)
+        float dirSign = Mathf.Sign(transform.localScale.x);
+        Vector3 spawnPos = transform.position + new Vector3(slashOffset.x * dirSign, slashOffset.y, 0);
+
+        // 오른쪽이면 0도, 왼쪽이면 180도 회전
+        float yRot = (dirSign > 0) ? 0f : 180f;
+        Quaternion rot = Quaternion.Euler(0, yRot, 0);
+
+        GameObject slash = Instantiate(slashPrefab, spawnPos, rot, transform);
+        Destroy(slash, slashLifeTime);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    bool IsPlayerInHitBox()
     {
-        // 전체 공격 중이면서 + 히트 윈도우 안인 경우에만 데미지
+        float dir = Mathf.Sign(transform.localScale.x);
+        Vector2 center = (Vector2)transform.position + new Vector2(hitBoxOffset.x * dir, hitBoxOffset.y);
+        return Physics2D.OverlapBox(center, hitBoxSize, 0f, playerMask) != null;
+    }
+
+    public void OnSlashHitPlayer(Collider2D other)
+    {
         if (!isAttacking || !canHitPlayer) return;
+        if (!other.CompareTag("Player")) return;
 
-        if (collision.collider.CompareTag("Player"))
+        PlayerDamage2D pd = other.GetComponent<PlayerDamage2D>();
+        if (pd != null)
         {
-            PlayerDamage2D pd = collision.collider.GetComponent<PlayerDamage2D>();
-            if (pd != null)
-            {
-                pd.OnDamaged(transform.position);
-            }
-
-            // 맞추면 바로 멈추고 공격 종료(하지만 다음 공격 여부는 AttackRoutine에서 처리)
-            rigid.velocity = Vector2.zero;
-            canHitPlayer = false;
+            Debug.Log($"⚔️ [MiddleEnemy] 플레이어 적중!");
+            pd.OnDamaged(transform.position);
+            
+            // 다단 히트 방지
+            canHitPlayer = false; 
         }
     }
 
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, closeRange);
+        float dir = Mathf.Sign(transform.localScale.x);
+        Vector2 center = Application.isPlaying 
+            ? (Vector2)transform.position + new Vector2(hitBoxOffset.x * dir, hitBoxOffset.y)
+            : (Vector2)transform.position + hitBoxOffset;
+        
+        Gizmos.DrawWireCube(center, hitBoxSize);
     }
 }

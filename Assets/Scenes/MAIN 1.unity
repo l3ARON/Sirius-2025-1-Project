@@ -1125,9 +1125,9 @@ GameObject:
   - component: {fileID: 186887515}
   - component: {fileID: 186887514}
   - component: {fileID: 186887513}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Middle
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1329,13 +1329,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolSpeed: 1.5
   chaseSpeed: 5
-  detectRange: 8
+  followDistance: 2
+  detectWidth: 27
+  detectHeight: 3
   playerMask:
     serializedVersion: 2
     m_Bits: 8
-  isPatrolling: 1
-  isChasing: 0
   isMovementPaused: 0
+  isFriendlyMode: 0
 --- !u!114 &186887514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1349,10 +1350,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 3
+  currentHP: 0
   invincibleTime: 0.8
   blinkInterval: 0.1
   knockbackPower: 6
-  knockbackUpPower: 1
   isFriendly: 0
 --- !u!114 &186887515
 MonoBehaviour:
@@ -1366,14 +1367,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e21ca9f409ce014092448f53efe2e23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  closeRange: 4
+  hitBoxSize: {x: 10, y: 2}
+  hitBoxOffset: {x: 0, y: 0}
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 8
   windUpTime: 1
-  dashSpeed: 6
+  dashSpeed: 12
   dashDuration: 0.6
   cooldown: 0
   hitStartTime: 0.3
   hitWindow: 0.2
-  damage: 1
+  slashPrefab: {fileID: 2952244539869406566, guid: 0f589a4a9e85b2b4d98336dbccca0ec4, type: 3}
+  slashOffset: {x: 2.5, y: 0}
+  slashLifeTime: 0.4
   isAttacking: 0
 --- !u!1 &192839145
 GameObject:
@@ -9048,6 +9055,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1175628202}
     - target: {fileID: 6004509912184925259, guid: 898c9ca5eaaf42540ac8c38a74203b44, type: 3}
+      propertyPath: normalLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6004509912184925259, guid: 898c9ca5eaaf42540ac8c38a74203b44, type: 3}
       propertyPath: hpIcons.Array.data[0]
       value: 
       objectReference: {fileID: 743376820}
@@ -9069,6 +9080,10 @@ PrefabInstance:
       objectReference: {fileID: 764235705}
     - target: {fileID: 9023496814205476688, guid: 898c9ca5eaaf42540ac8c38a74203b44, type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 9023496814205476688, guid: 898c9ca5eaaf42540ac8c38a74203b44, type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []

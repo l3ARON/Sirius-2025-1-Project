@@ -22,7 +22,7 @@ public class PlayerDamage2D : MonoBehaviour
     [Header("무적/깜박임 설정")]
     public float invincibleTime = 2f;       // 피격 후 무적 시간
     public float blinkInterval = 0.1f;      // 깜빡임 간격
-    public int normalLayer = 10;           // 평소 레이어
+    public int normalLayer = 3;           // 평소 레이어
     public int invincibleLayer = 11;       // 무적 레이어
 
     [Header("UI (HP 표시용 오브젝트들)")]

@@ -3,127 +3,144 @@ using UnityEngine;
 public class MiddleEnemyMovement : MonoBehaviour
 {
     Rigidbody2D rigid;
-    SpriteRenderer sprite;
     Animator anim;
-
-    [Header("순찰 이동 속도")]
+    
+    [Header("설정")]
     public float patrolSpeed = 1.5f;
-
-    [Header("추적 이동 속도 (1차 범위)")]
     public float chaseSpeed = 3.5f;
+    public float followDistance = 2.0f; // 아군일 때 유지 거리
 
-    [Header("감지 범위")]
-    public float detectRange = 8f;     // 1차 범위 (추적)
+    [Header("감지")]
+    public float detectWidth = 8f;
+    public float detectHeight = 3f;
     public LayerMask playerMask;
 
     [Header("상태")]
-    public bool isPatrolling = true;
-    public bool isChasing = false;
     public bool isMovementPaused = false;
+    public bool isFriendlyMode = false; // 아군 여부
 
     Transform player;
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
-        anim   = GetComponent<Animator>();
+        anim  = GetComponent<Animator>();
     }
 
     void Start()
     {
-        var p = GameObject.FindWithTag("Player");
+        GameObject p = GameObject.FindWithTag("Player");
         if (p != null) player = p.transform;
     }
 
     void FixedUpdate()
     {
-        if (player == null) return;
-
-        if (isMovementPaused)
+        if (isMovementPaused || player == null) 
         {
-            rigid.velocity = Vector2.zero;
-            UpdateAnim();
+            UpdateAnim(false);
             return;
         }
 
+        if (isFriendlyMode)
+        {
+            // 아군 로직: 플레이어 따라가기
+            FollowPlayerLogic();
+        }
+        else
+        {
+            // 적군 로직: 순찰 및 추적
+            EnemyLogic();
+        }
+    }
+
+    void EnemyLogic()
+    {
+        bool detected = DetectPlayerBox();
+        float moveSpeed = detected ? chaseSpeed : patrolSpeed;
+        
+        float dirX = 0f;
+        if (detected)
+        {
+            dirX = Mathf.Sign(player.position.x - transform.position.x);
+        }
+        else
+        {
+            // 순찰 (간단히 현재 속도 방향 유지)
+            dirX = (rigid.velocity.x == 0) ? 1f : Mathf.Sign(rigid.velocity.x);
+        }
+
+        rigid.velocity = new Vector2(moveSpeed * dirX, rigid.velocity.y);
+        Flip(dirX);
+        UpdateAnim(true);
+    }
+
+    void FollowPlayerLogic()
+    {
         float dist = Vector2.Distance(transform.position, player.position);
 
-        if (dist <= detectRange)
-            StartChasing();
+        // 일정 거리 이상 떨어지면 이동
+        if (dist > followDistance)
+        {
+            float dirX = Mathf.Sign(player.position.x - transform.position.x);
+            rigid.velocity = new Vector2(chaseSpeed * dirX, rigid.velocity.y);
+            Flip(dirX);
+            UpdateAnim(true);
+        }
         else
-            StopChasing();
-
-        Move();
-        UpdateAnim();
-    }
-
-    void StartChasing()
-    {
-        isPatrolling = false;
-        isChasing = true;
-    }
-
-    void StopChasing()
-    {
-        isPatrolling = true;
-        isChasing = false;
-    }
-
-    void Move()
-    {
-        float dir = 0f;
-
-        if (isChasing)
         {
-            dir = Mathf.Sign(player.position.x - transform.position.x);
-            rigid.velocity = new Vector2(chaseSpeed * dir, rigid.velocity.y);
-        }
-        else if (isPatrolling)
-        {
-            dir = Mathf.Sign(rigid.velocity.x == 0 ? 1 : rigid.velocity.x);
-            rigid.velocity = new Vector2(patrolSpeed * dir, rigid.velocity.y);
-        }
-
-        // 🔥 flipX 대신 localScale.x 변경 (Collider까지 반전됨)
-        if (dir != 0)
-        {
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * (dir > 0 ? 1 : -1);
-            transform.localScale = scale;
+            rigid.velocity = Vector2.zero;
+            UpdateAnim(false);
         }
     }
 
-
-    void UpdateAnim()
+    // Controller에서 호출
+    public void SetFriendlyMode()
     {
-        if (anim == null) return;
-
-        bool walk = isPatrolling && !isChasing && !isMovementPaused;
-        bool run  = isChasing && !isMovementPaused;
-
-        anim.SetBool("isWalk", walk);
-        anim.SetBool("isRun", run);
-        // isAttack은 공격 스크립트(MiddleEnemyAttack)에서만 제어
+        isFriendlyMode = true;
+        isMovementPaused = false;
     }
 
     public void PauseMovement()
     {
         isMovementPaused = true;
         rigid.velocity = Vector2.zero;
-        UpdateAnim();
+        UpdateAnim(false);
     }
 
     public void ResumeMovement()
     {
         isMovementPaused = false;
-        UpdateAnim();
     }
 
-    // 📏 감지 범위 시각화 (Scene 뷰에서만 보임)
+    void Flip(float dir)
+    {
+        if (dir == 0) return;
+        Vector3 scale = transform.localScale;
+        scale.x = Mathf.Abs(scale.x) * (dir > 0 ? 1 : -1);
+        transform.localScale = scale;
+    }
+
+    void UpdateAnim(bool isMoving)
+    {
+        if (anim == null) return;
+        anim.SetBool("isWalk", isMoving);
+        
+        // 아군이거나 플레이어 감지되면 Run 상태
+        bool runCondition = isFriendlyMode ? isMoving : DetectPlayerBox();
+        anim.SetBool("isRun", isMoving && runCondition);
+    }
+
+    bool DetectPlayerBox()
+    {
+        if (isFriendlyMode) return false; 
+        Vector2 center = transform.position;
+        Vector2 size = new Vector2(detectWidth, detectHeight);
+        return Physics2D.OverlapBox(center, size, 0f, playerMask) != null;
+    }
+
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
+        Gizmos.DrawCube(transform.position, new Vector3(detectWidth, detectHeight, 1));
     }
 }

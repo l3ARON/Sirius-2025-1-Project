@@ -1,117 +1,139 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class MiddleEnemyController : MonoBehaviour
 {
     [Header("HP")]
     public int maxHP = 3;
-    int currentHP;
+    [SerializeField] int currentHP;
 
     [Header("피격 연출")]
-    public float invincibleTime = 0.8f;
+    public float invincibleTime = 0.5f;
     public float blinkInterval = 0.1f;
-    public float knockbackPower = 6f;
-    public float knockbackUpPower = 1f;
+    public float knockbackPower = 4f;
 
+    // 컴포넌트 참조
     MiddleEnemyAttack attack;
     MiddleEnemyMovement movement;
     SpriteRenderer sprite;
     Rigidbody2D rigid;
+    
     bool isInvincible = false;
-
-    public bool isFriendly = false;
+    [HideInInspector] public bool isFriendly = false;
 
     void Awake()
     {
         currentHP = maxHP;
-
-        attack = GetComponent<MiddleEnemyAttack>();
-        movement = GetComponent<MiddleEnemyMovement>();
-        sprite = GetComponent<SpriteRenderer>();
-        rigid = GetComponent<Rigidbody2D>();
+        attack    = GetComponent<MiddleEnemyAttack>();
+        movement  = GetComponent<MiddleEnemyMovement>();
+        sprite    = GetComponent<SpriteRenderer>();
+        rigid     = GetComponent<Rigidbody2D>();
     }
 
-    /// <summary>
-    /// dmg: 데미지
-    /// isMelee: 플레이어의 근접 공격인지?
-    /// hitPos: 공격자가 있는 위치 (넉백 방향 계산용)
-    /// </summary>
-    public void TakeDamage(int dmg, bool isMelee, Vector2 hitPos = default)
+    // 플레이어 공격 스크립트에서 호출
+    // 👇 [중요!] 원래 TakeDamage였던 이 함수의 이름을 ApplyDamage로 바꿔야 합니다!
+    public void ApplyDamage(int dmg, bool isMelee, Vector2 hitPos) 
     {
         if (isFriendly || isInvincible) return;
 
-        // 패링(아군 전환) 조건
-        if (attack.isAttacking && currentHP == 1 && isMelee)
+        // 패링 로직
+        if (attack != null && attack.isAttacking && currentHP <= 1 && isMelee)
         {
             BecomeFriendly();
             return;
         }
 
+        // 피격 로직
         currentHP -= dmg;
+        Debug.Log($"[MiddleEnemy] 피격! 남은 HP: {currentHP}");
 
         if (currentHP <= 0)
-        {
             Die();
-        }
         else
-        {
             StartCoroutine(HitEffectRoutine(hitPos));
-        }
     }
+
+    // 2️⃣ [도우미 함수] 이름은 TakeDamage (재료 1개)
+    // ⚠️ 이 함수가 2개 있으면 안 됩니다! 딱 1개만 있어야 해요.
+    public void TakeDamage(int dmg)
+    {
+        // 메인 함수(ApplyDamage)에게 전달
+        ApplyDamage(dmg, true, transform.position);
+    }
+
+    
+
 
     IEnumerator HitEffectRoutine(Vector2 hitPos)
     {
         isInvincible = true;
 
-        // 이동/공격 중단
-        movement.PauseMovement();
-        rigid.velocity = Vector2.zero;
+        // 1. 피격 시 행동 강제 중단 (공격 캔슬, 이동 멈춤)
+        if (movement != null) movement.PauseMovement();
+        if (attack != null)   attack.ForceStopAttack(); 
 
-        // 🌪 넉백 방향 계산
-        int dir = transform.position.x - hitPos.x > 0 ? 1 : -1;
+        // 2. 넉백
+        if (rigid != null)
+        {
+            rigid.velocity = Vector2.zero;
+            float dirX = Mathf.Sign(transform.position.x - hitPos.x);
+            rigid.AddForce(new Vector2(dirX * knockbackPower, knockbackPower * 0.5f), ForceMode2D.Impulse);
+        }
 
-        rigid.AddForce(
-            new Vector2(dir * knockbackPower, knockbackUpPower * knockbackPower),
-            ForceMode2D.Impulse
-        );
-
-        // 🌟 깜빡임 연출 시작
+        // 3. 깜빡임
         float elapsed = 0f;
-        bool visible = true;
-
         while (elapsed < invincibleTime)
         {
-            visible = !visible;
-            sprite.enabled = visible;
-
+            if (sprite != null) sprite.enabled = !sprite.enabled;
             yield return new WaitForSeconds(blinkInterval);
             elapsed += blinkInterval;
         }
+        if (sprite != null) sprite.enabled = true;
 
-        // 복구
-        sprite.enabled = true;
-        movement.ResumeMovement();
         isInvincible = false;
-    }
 
-    void Die()
-    {
-        Debug.Log("🐺 중형 몬스터 사망");
-        Destroy(gameObject);
+        // 4. 다시 행동 재개 (아군이 아닐 때만)
+        if (!isFriendly && movement != null)
+        {
+            movement.ResumeMovement();
+        }
     }
 
     void BecomeFriendly()
     {
-        Debug.Log("🐺 패링 성공 → 아군 전환!");
-
+        Debug.Log("🛡️ [패링 성공] 몬스터가 아군으로 전환됩니다!");
         isFriendly = true;
+        isInvincible = false;
+        StopAllCoroutines(); // 피격 루틴 중단
 
-        attack.enabled = false;
+        // 공격 기능 끄기
+        if (attack != null)
+        {
+            attack.ForceStopAttack(); // 하던 공격 멈춤
+            attack.enabled = false;   // 스크립트 비활성화
+        }
 
-        movement.detectRange = 30f;
-        movement.chaseSpeed = 4f;
+        // 이동을 아군 모드로 변경
+        if (movement != null) movement.SetFriendlyMode();
 
-        sprite.color = new Color(0.6f, 0.8f, 1f); // 파란 톤
-        gameObject.tag = "Friendly";
+        // 비주얼 변경 (파란색)
+        if (sprite != null) 
+        {
+            sprite.enabled = true;
+            sprite.color = new Color(0.5f, 0.8f, 1f);
+        }
+
+        // 태그/레이어 변경 (플레이어 공격 안 맞게)
+        gameObject.tag = "Untagged";
+        gameObject.layer = LayerMask.NameToLayer("Default"); 
+    }
+
+    void Die()
+    {
+        if (movement != null) movement.PauseMovement();
+        StopAllCoroutines();
+        GetComponent<Collider2D>().enabled = false; 
+        Destroy(gameObject, 0.5f);
     }
 }
