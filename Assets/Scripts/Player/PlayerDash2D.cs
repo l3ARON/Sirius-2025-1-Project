@@ -2,13 +2,18 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// 대시 + 쿨타임 (isJump로 애니 공유)
+/// 대시 + 쿨타임 (isJump로 애니 공유) + 잔상 효과
 /// </summary>
 public class PlayerDash2D : MonoBehaviour
 {
+    [Header("Dash Settings")]
     public float dashSpeed = 15f;
     public float dashDuration = 0.2f;
     public float dashCooldown = 5f;
+
+    [Header("Dash Ghost")]
+    public GameObject ghostPrefab;          // 👈 여기 프리팹 넣어주기
+    public float ghostSpawnInterval = 0.05f;// 잔상 생성 간격 (작을수록 촘촘)
 
     bool isDashing = false;
     bool isCooldown = false;
@@ -68,6 +73,10 @@ public class PlayerDash2D : MonoBehaviour
         if (refs.anim != null)
             refs.anim.SetBool("isJump", true);
 
+        // 🔥 대쉬 시작할 때 잔상 코루틴 시작
+        if (ghostPrefab != null)
+            StartCoroutine(DashGhostRoutine());
+
         StartCoroutine(DashCooldown());
     }
 
@@ -94,5 +103,44 @@ public class PlayerDash2D : MonoBehaviour
         }
         isCooldown = false;
         Debug.Log("✅ Dash Ready!");
+    }
+
+    // ========================= 잔상 관련 코드 =========================
+
+    IEnumerator DashGhostRoutine()
+    {
+        // isDashing이 true인 동안, 일정 간격으로 잔상 생성
+        while (isDashing)
+        {
+            SpawnGhost();
+            yield return new WaitForSeconds(ghostSpawnInterval);
+        }
+    }
+
+    void SpawnGhost()
+    {
+        if (ghostPrefab == null || refs.spriteRenderer == null)
+            return;
+
+        // 플레이어 현재 위치에 잔상 생성
+        GameObject g = Instantiate(
+            ghostPrefab,
+            refs.spriteRenderer.transform.position,
+            Quaternion.identity
+        );
+
+        SpriteRenderer ghostSr = g.GetComponent<SpriteRenderer>();
+        if (ghostSr != null)
+        {
+            // 현재 스프라이트 복사
+            ghostSr.sprite = refs.spriteRenderer.sprite;
+
+            // 좌우 반전 상태도 복사
+            ghostSr.flipX = refs.spriteRenderer.flipX;
+
+            // 정렬 레이어 / 순서 맞추기 (살짝 뒤에)
+            ghostSr.sortingLayerID = refs.spriteRenderer.sortingLayerID;
+            ghostSr.sortingOrder = refs.spriteRenderer.sortingOrder - 1;
+        }
     }
 }

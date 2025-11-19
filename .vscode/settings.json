@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Sirius-2025-1-Project.sln"
+    "dotnet.defaultSolution": "BugQuest.sln"
 }
