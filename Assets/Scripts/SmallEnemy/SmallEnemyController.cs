@@ -21,25 +21,27 @@ public class SmallEnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// isMelee: true면 근접 공격, false면 원거리 공격
+    /// dmg: 데미지
+    /// isMelee: 근접 공격 여부
+    /// isRealPlayer: 🔥 [추가] 진짜 플레이어가 때렸는지 여부 (기본값 false)
     /// </summary>
-    public void TakeDamage(int dmg, bool isMelee)
+    public void TakeDamage(int dmg, bool isMelee, bool isRealPlayer = false)
     {
         currentHP -= dmg;
-        Debug.Log($"[SmallEnemyController] 피격! HP: {currentHP}/{maxHP} / melee={isMelee}");
+        // Debug.Log($"[SmallEnemy] 피격! HP: {currentHP}/{maxHP} / Melee: {isMelee} / Player: {isRealPlayer}");
 
         if (currentHP <= 0)
         {
-            Die(isMelee);
+            Die(isMelee, isRealPlayer);
         }
     }
 
-    void Die(bool killedByMelee)
+    void Die(bool killedByMelee, bool killedByRealPlayer)
     {
-        Debug.Log("[SmallEnemy] 사망");
+        Debug.Log($"[SmallEnemy] 사망 (Killer: {(killedByRealPlayer ? "Player" : "Ally/Other")})");
 
-        // 🔥 근접 공격으로 죽였을 때만 버프 지급
-        if (killedByMelee)
+        // 🔥 [조건 수정] 근접 공격이고 + 진짜 플레이어가 죽였을 때만 버프 지급
+        if (killedByMelee && killedByRealPlayer)
         {
             GameObject playerObj = GameObject.FindWithTag("Player");
             if (playerObj != null)
@@ -48,7 +50,7 @@ public class SmallEnemyController : MonoBehaviour
                 if (pa != null)
                 {
                     pa.EnableNextRangedAttack();
-                    Debug.Log("[SmallEnemy] (근접 킬) 다음 공격은 원거리로 전환!");
+                    Debug.Log("🏹 [SmallEnemy] 플레이어 근접 킬! -> 원거리 공격 충전 완료");
                 }
             }
         }

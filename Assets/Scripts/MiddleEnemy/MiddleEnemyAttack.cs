@@ -184,7 +184,12 @@ public class MiddleEnemyAttack : MonoBehaviour
                     if (mid != null) mid.ApplyDamage(damage, true, transform.position);
 
                     var small = hit.GetComponent<SmallEnemyController>();
-                    if (small != null) small.TakeDamage(damage, true);
+                    if (small != null) 
+                    {
+                        // 🔥 [수정] 마지막에 'false' 추가 -> "나는 플레이어가 아님"
+                        // 늑대가 죽여도 원거리 공격이 충전되지 않음
+                        small.TakeDamage(damage, true, false); 
+                    }
                     
                     success = true;
                     Debug.Log($"🎯 [RangeCheck] 적({hit.name}) 타격!");

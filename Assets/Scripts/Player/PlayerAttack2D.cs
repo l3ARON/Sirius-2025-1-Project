@@ -151,7 +151,7 @@ public class PlayerAttack2D : MonoBehaviour
         SmallEnemyController small = enemy.GetComponentInParent<SmallEnemyController>();
         if (small != null)
         {
-            small.TakeDamage(attackDamage, true);
+            small.TakeDamage(attackDamage, true, true);
             Debug.Log($"💥 [Small] {small.gameObject.name}에게 {attackDamage} 데미지!");
             return;
         }
