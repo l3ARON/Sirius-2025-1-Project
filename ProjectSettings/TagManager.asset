@@ -9,6 +9,7 @@ TagManager:
   - MoveStage
   - Enemy
   - RespawnTag
+  - Friendly
   layers:
   - Default
   - TransparentFX

@@ -4,6 +4,7 @@ public class MiddleEnemyMovement : MonoBehaviour
 {
     Rigidbody2D rigid;
     SpriteRenderer sprite;
+    Animator anim;
 
     [Header("순찰 이동 속도")]
     public float patrolSpeed = 1.5f;
@@ -26,6 +27,7 @@ public class MiddleEnemyMovement : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
+        anim   = GetComponent<Animator>();
     }
 
     void Start()
@@ -36,8 +38,14 @@ public class MiddleEnemyMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isMovementPaused) return;
         if (player == null) return;
+
+        if (isMovementPaused)
+        {
+            rigid.velocity = Vector2.zero;
+            UpdateAnim();
+            return;
+        }
 
         float dist = Vector2.Distance(transform.position, player.position);
 
@@ -47,6 +55,7 @@ public class MiddleEnemyMovement : MonoBehaviour
             StopChasing();
 
         Move();
+        UpdateAnim();
     }
 
     void StartChasing()
@@ -63,7 +72,7 @@ public class MiddleEnemyMovement : MonoBehaviour
 
     void Move()
     {
-        float dir = 0;
+        float dir = 0f;
 
         if (isChasing)
         {
@@ -72,21 +81,44 @@ public class MiddleEnemyMovement : MonoBehaviour
         }
         else if (isPatrolling)
         {
-            rigid.velocity = new Vector2(patrolSpeed, rigid.velocity.y);
+            // 기본적으로 오른쪽으로 걷기 (원하면 방향 반전 로직 추가 가능)
+            dir = Mathf.Sign(rigid.velocity.x == 0 ? 1 : rigid.velocity.x);
+            rigid.velocity = new Vector2(patrolSpeed * dir, rigid.velocity.y);
         }
 
         if (sprite != null && dir != 0)
-            sprite.flipX = dir > 0;
+            sprite.flipX = dir < 0;
+    }
+
+    void UpdateAnim()
+    {
+        if (anim == null) return;
+
+        bool walk = isPatrolling && !isChasing && !isMovementPaused;
+        bool run  = isChasing && !isMovementPaused;
+
+        anim.SetBool("isWalk", walk);
+        anim.SetBool("isRun", run);
+        // isAttack은 공격 스크립트(MiddleEnemyAttack)에서만 제어
     }
 
     public void PauseMovement()
     {
         isMovementPaused = true;
         rigid.velocity = Vector2.zero;
+        UpdateAnim();
     }
 
     public void ResumeMovement()
     {
         isMovementPaused = false;
+        UpdateAnim();
+    }
+
+    // 📏 감지 범위 시각화 (Scene 뷰에서만 보임)
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
     }
 }
