@@ -11,10 +11,10 @@ public class MiddleEnemyAttack : MonoBehaviour
     public float closeRange = 2f;          // 공격 발동 범위
 
     [Header("공격 설정")]
-    public float windUpTime = 0.8f;       // ready 상태로 준비하는 시간
-    public float dashSpeed = 6f;          // 돌진 속도
-    public float dashDuration = 1.0f;     // 돌진 유지 시간
-    public float cooldown = 2.0f;         // 공격 후 다시 공격 가능해지기까지 대기 시간
+    public float windUpTime = 0.8f;        // ready 상태로 준비하는 시간
+    public float dashSpeed = 6f;           // 돌진 속도
+    public float dashDuration = 1.0f;      // 돌진 유지 시간
+    public float cooldown = 0f;            // 공격 후 대기 시간 (0이면 바로 다음 공격 가능)
 
     [Header("히트/패링 타이밍")]
     [Tooltip("돌진 시작 후 몇 초 뒤에 실제 타격 판정을 열지")]
@@ -70,6 +70,7 @@ public class MiddleEnemyAttack : MonoBehaviour
         // 0️⃣ 이동 멈추기
         if (move != null)
             move.PauseMovement();
+        rigid.velocity = Vector2.zero;
 
         // 1️⃣ ready 애니메이션으로 준비 (isReady = true)
         if (anim != null)
@@ -86,6 +87,7 @@ public class MiddleEnemyAttack : MonoBehaviour
         if (player == null)
         {
             EndAttack();
+            isAttacking = false;
             yield break;
         }
 
@@ -122,13 +124,31 @@ public class MiddleEnemyAttack : MonoBehaviour
 
         // 5️⃣ 돌진 종료
         rigid.velocity = Vector2.zero;
-        EndAttack();
+        EndAttack();   // 애니 상태만 정리 (이동 재개는 여기서 안 함)
 
-        // 6️⃣ 쿨타임
-        yield return new WaitForSeconds(cooldown);
+        // 6️⃣ 쿨타임 (0이면 그냥 바로 넘어감)
+        if (cooldown > 0f)
+            yield return new WaitForSeconds(cooldown);
 
-        isAttacking = false;
         canHitPlayer = false;
+        isAttacking = false;
+
+        // 7️⃣ 공격이 끝난 후, 아직 범위 안에 플레이어가 있으면 다시 ready → attack
+        if (player != null)
+        {
+            float dist = Vector2.Distance(transform.position, player.position);
+
+            if (dist <= closeRange)
+            {
+                // 다시 공격 루틴 시작 (ready부터)
+                StartCoroutine(AttackRoutine());
+                yield break;
+            }
+        }
+
+        // 여기까지 왔다는 건 플레이어가 범위 밖 → 순찰 재개
+        if (move != null)
+            move.ResumeMovement();
     }
 
     void EndAttack()
@@ -138,9 +158,7 @@ public class MiddleEnemyAttack : MonoBehaviour
             anim.SetBool("isAttack", false);
             anim.SetBool("isReady",  false);
         }
-
-        if (move != null)
-            move.ResumeMovement();
+        // ❗ 여기서는 movement 재개하지 않음
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -156,11 +174,9 @@ public class MiddleEnemyAttack : MonoBehaviour
                 pd.OnDamaged(transform.position);
             }
 
-            // 맞추면 바로 멈추고 공격 종료
+            // 맞추면 바로 멈추고 공격 종료(하지만 다음 공격 여부는 AttackRoutine에서 처리)
             rigid.velocity = Vector2.zero;
             canHitPlayer = false;
-            EndAttack();
-            isAttacking = false;
         }
     }
 

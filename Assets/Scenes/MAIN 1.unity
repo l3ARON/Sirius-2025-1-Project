@@ -1125,9 +1125,9 @@ GameObject:
   - component: {fileID: 186887515}
   - component: {fileID: 186887514}
   - component: {fileID: 186887513}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Middle
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1366,11 +1366,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e21ca9f409ce014092448f53efe2e23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  closeRange: 2
+  closeRange: 4
   windUpTime: 1
   dashSpeed: 6
   dashDuration: 0.6
-  cooldown: 2.3
+  cooldown: 0
+  hitStartTime: 0.3
+  hitWindow: 0.2
   damage: 1
   isAttacking: 0
 --- !u!1 &192839145

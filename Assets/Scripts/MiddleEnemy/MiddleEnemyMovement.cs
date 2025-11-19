@@ -81,14 +81,19 @@ public class MiddleEnemyMovement : MonoBehaviour
         }
         else if (isPatrolling)
         {
-            // 기본적으로 오른쪽으로 걷기 (원하면 방향 반전 로직 추가 가능)
             dir = Mathf.Sign(rigid.velocity.x == 0 ? 1 : rigid.velocity.x);
             rigid.velocity = new Vector2(patrolSpeed * dir, rigid.velocity.y);
         }
 
-        if (sprite != null && dir != 0)
-            sprite.flipX = dir < 0;
+        // 🔥 flipX 대신 localScale.x 변경 (Collider까지 반전됨)
+        if (dir != 0)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (dir > 0 ? 1 : -1);
+            transform.localScale = scale;
+        }
     }
+
 
     void UpdateAnim()
     {
