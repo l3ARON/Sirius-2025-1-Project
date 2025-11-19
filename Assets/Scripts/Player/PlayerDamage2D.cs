@@ -103,10 +103,60 @@ public class PlayerDamage2D : MonoBehaviour
         }
     }
 
+    bool isDead = false;   // 👈 추가
+
     void Die()
     {
-        // TODO: 사망 연출 + GameOver 처리
-        // 예: 애니메이션 재생, 입력 막기, GameManager에 알리기 등
+        if (isDead) return;
+        isDead = true;
+
         Debug.Log("Player Dead");
+
+        // 움직임/충돌 막고 싶으면 여기서 꺼도 됨 (선택)
+        if (refs.rigid != null)
+        {
+            refs.rigid.velocity = Vector2.zero;
+            refs.rigid.simulated = false;   // 물리 중지
+        }
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // 죽음 애니메이션 트리거가 있으면:
+        // if (refs.anim != null) refs.anim.SetTrigger("Die");
+
+        StartCoroutine(DieFadeOut());
     }
+
+    IEnumerator DieFadeOut()
+    {
+        float fadeTime = 1.5f;   // 전체 사라지는 데 걸리는 시간
+        float t = 0f;
+
+        SpriteRenderer sr = refs.spriteRenderer;
+        if (sr == null)
+        {
+            yield break;
+        }
+
+        Color origin = sr.color;
+
+        while (t < fadeTime)
+        {
+            float alpha = Mathf.Lerp(1f, 0f, t / fadeTime);
+            sr.color = new Color(origin.r, origin.g, origin.b, alpha);
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        // 완전히 0으로 맞춰주기
+        sr.color = new Color(origin.r, origin.g, origin.b, 0f);
+
+        // 여기서 오브젝트 삭제 or 리스폰 로직 호출
+        // Destroy(gameObject);
+        // 또는 GameManager.Instance.OnPlayerDead(); 이런 식으로
+    }
+
+
 }
