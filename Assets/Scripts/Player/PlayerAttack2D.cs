@@ -24,6 +24,8 @@ public class PlayerAttack2D : MonoBehaviour
     public GameObject slashPrefab;      // 근접 공격 슬라이스 이펙트
     public float slashOffset = 0.5f;    // 플레이어 앞쪽으로 얼마만큼 띄울지
 
+    public GameObject weapon2;   // UI나 무기 오브젝트
+
     PlayerRefs refs;
 
     void Start()
@@ -43,6 +45,9 @@ public class PlayerAttack2D : MonoBehaviour
     public void EnableNextRangedAttack()
     {
         isNextAttackRanged = true;
+
+        if (weapon2 != null)
+            weapon2.SetActive(true);
     }
 
     // 공격 키 입력
@@ -102,19 +107,22 @@ public class PlayerAttack2D : MonoBehaviour
 
         GameObject proj = Instantiate(longRangeAttackPrefab, refs.firePoint.position, Quaternion.identity);
 
-        // 발사 방향 설정
         var lr = proj.GetComponent<LongRangeAttack>();
         if (lr != null)
         {
-            // flipX 기준으로 방향 정하기
             lr.direction = refs.spriteRenderer.flipX ? Vector2.right : Vector2.left;
         }
 
         isNextAttackRanged = false;
         rangedAttackTimer = rangedAttackDelay;
 
+        // 🔥 발사 후 weapon2 비활성화
+        if (weapon2 != null)
+            weapon2.SetActive(false);
+
         Debug.Log("🎯 원거리 공격 발사");
     }
+
 
     // 근접 공격이 진행 중일 때
     void HandleMeleeProgress()

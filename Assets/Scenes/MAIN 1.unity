@@ -5255,6 +5255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1ade2f2f298b24e8e261e502f374ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resetDelay: 3
 --- !u!4 &1356979027 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 493540, guid: f7c17fa8777708e4bac5fcc17520cf1a, type: 3}
