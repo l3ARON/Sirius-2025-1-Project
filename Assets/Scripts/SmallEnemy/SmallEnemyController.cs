@@ -1,8 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// 소형 적 전체 관리: HP, 사망 처리 등
-/// </summary>
 [RequireComponent(typeof(SmallEnemyMovement), typeof(SmallEnemyAttack))]
 public class SmallEnemyController : MonoBehaviour
 {
@@ -23,35 +20,44 @@ public class SmallEnemyController : MonoBehaviour
         currentHP = maxHP;
     }
 
-    public void TakeDamage(int dmg)
+    /// <summary>
+    /// isMelee: true면 근접 공격, false면 원거리 공격
+    /// </summary>
+    public void TakeDamage(int dmg, bool isMelee)
     {
         currentHP -= dmg;
-        Debug.Log($"[SmallEnemyController] 피격! HP: {currentHP}/{maxHP}");
+        Debug.Log($"[SmallEnemyController] 피격! HP: {currentHP}/{maxHP} / melee={isMelee}");
 
         if (currentHP <= 0)
         {
-            Die();
+            Die(isMelee);
         }
     }
 
-    void Die()
+    void Die(bool killedByMelee)
     {
         Debug.Log("[SmallEnemy] 사망");
 
-        // 🔥 여기서 플레이어에게 '다음 공격은 원거리' 플래그 주기
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
+        // 🔥 근접 공격으로 죽였을 때만 버프 지급
+        if (killedByMelee)
         {
-            PlayerAttack2D pa = playerObj.GetComponent<PlayerAttack2D>();
-            if (pa != null)
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null)
             {
-                pa.EnableNextRangedAttack();
-                Debug.Log("[SmallEnemy] 다음 공격은 원거리로 전환!");
+                PlayerAttack2D pa = playerObj.GetComponent<PlayerAttack2D>();
+                if (pa != null)
+                {
+                    pa.EnableNextRangedAttack();
+                    Debug.Log("[SmallEnemy] (근접 킬) 다음 공격은 원거리로 전환!");
+                }
             }
         }
 
-        // 이펙트 있으면 여기서 Instantiate
-        // Instantiate(deathEffect, transform.position, Quaternion.identity);
+        // 이펙트
+        if (deathEffect != null)
+        {
+            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        }
 
         Destroy(gameObject);
     }

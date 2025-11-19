@@ -17,11 +17,13 @@ public class LongRangeAttack : MonoBehaviour
         // 🔥 방향에 따라 좌우 반전
         if (direction.x > 0)
         {
-            visual.localRotation = Quaternion.Euler(0, 180f, -37f);  // 왼쪽 방향
+            // 오른쪽
+            visual.localRotation = Quaternion.Euler(0, 180f, -37f);
         }
         else
         {
-            visual.localRotation = Quaternion.Euler(0, 0, -37f);     // 오른쪽 방향
+            // 왼쪽
+            visual.localRotation = Quaternion.Euler(0, 0, -37f);
         }
 
         Destroy(gameObject, lifeTime);
@@ -35,6 +37,17 @@ public class LongRangeAttack : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // 1️⃣ 먼저 소형 적(SmallEnemyController)인지 확인
+        SmallEnemyController small = other.GetComponentInParent<SmallEnemyController>();
+        if (small != null)
+        {
+            // 원거리 공격 → melee = false (노카운트)
+            small.TakeDamage(damage, false);
+            Destroy(gameObject);
+            return;
+        }
+
+        // 2️⃣ 그 외 Enemy 태그를 가진 적들 처리 (기존 제너릭 로직 유지)
         if (other.CompareTag("Enemy"))
         {
             var components = other.GetComponentsInParent<MonoBehaviour>();
@@ -48,8 +61,10 @@ public class LongRangeAttack : MonoBehaviour
                 }
             }
             Destroy(gameObject);
+            return;
         }
 
+        // 3️⃣ 바닥(플랫폼)에 부딪히면 삭제
         if (other.gameObject.layer == LayerMask.NameToLayer("flatform"))
         {
             Destroy(gameObject);

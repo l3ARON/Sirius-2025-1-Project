@@ -134,10 +134,19 @@ public class PlayerAttack2D : MonoBehaviour
 
     public void DealDamageToEnemy(GameObject enemy)
     {
-        Debug.Log("gkatnghcnf, target = " + enemy.name);
         if (enemy == null) return;
+        Debug.Log("[PlayerAttack2D] 근접 타격, target = " + enemy.name);
 
-        // 부모까지 포함해서 TakeDamage 찾기
+        // 1) 먼저 SmallEnemyController 찾기 (소형 몬스터용)
+        SmallEnemyController small = enemy.GetComponentInParent<SmallEnemyController>();
+        if (small != null)
+        {
+            small.TakeDamage(attackDamage, true);   // 👈 melee = true
+            Debug.Log($"💥 (Melee) {small.gameObject.name}에게 {attackDamage} 데미지!");
+            return;
+        }
+
+        // 2) 그 외의 일반 적들은 기존 리플렉션 로직 유지
         var components = enemy.GetComponentsInParent<MonoBehaviour>();
         bool found = false;
 
@@ -147,7 +156,7 @@ public class PlayerAttack2D : MonoBehaviour
             if (method != null)
             {
                 method.Invoke(component, new object[] { attackDamage });
-                Debug.Log($"💥 (SlashHit) {component.gameObject.name}에게 {attackDamage} 데미지!");
+                Debug.Log($"💥 (Generic) {component.gameObject.name}에게 {attackDamage} 데미지!");
                 found = true;
                 break;
             }
@@ -158,5 +167,6 @@ public class PlayerAttack2D : MonoBehaviour
             Debug.LogWarning($"[DealDamageToEnemy] {enemy.name} 및 부모에서 TakeDamage 찾지 못함");
         }
     }
+
 
 }
