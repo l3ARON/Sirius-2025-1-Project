@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 플레이어 피격/무적/넉백/HP UI 처리
@@ -126,6 +127,7 @@ public class PlayerDamage2D : MonoBehaviour
         // if (refs.anim != null) refs.anim.SetTrigger("Die");
 
         StartCoroutine(DieFadeOut());
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     IEnumerator DieFadeOut()
