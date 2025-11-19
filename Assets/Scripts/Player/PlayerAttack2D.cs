@@ -156,15 +156,14 @@ public class PlayerAttack2D : MonoBehaviour
             return;
         }
 
-        // 2) 🔥 [추가] 중형 몬스터(Middle) 체크 (이제 직접 찾아서 부릅니다)
+         // 2) 중형 몬스터(Middle) 체크
         MiddleEnemyController middle = enemy.GetComponentInParent<MiddleEnemyController>();
         if (middle != null)
         {
-            // 3개짜리 정식 함수를 올바르게 호출!
-            // (데미지, 근접공격=true, 내 위치)
-            middle.ApplyDamage(attackDamage, true, transform.position); 
+            // 🔥 [수정] 마지막에 'true'를 추가해서 "플레이어가 때림"을 알립니다.
+            middle.ApplyDamage(attackDamage, true, transform.position, true); 
             
-            Debug.Log($"💥 [Middle] {middle.gameObject.name}에게 {attackDamage} 데미지!");
+            Debug.Log($"💥 [Middle] {middle.gameObject.name}에게 데미지! (Player Attack)");
             return;
         }
 

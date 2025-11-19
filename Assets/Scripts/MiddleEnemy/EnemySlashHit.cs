@@ -18,7 +18,7 @@ public class EnemySlashHit : MonoBehaviour
         // 공격 판정은 본체(MiddleEnemyAttack)에게 위임
         if (enemyAttack != null)
         {
-            enemyAttack.OnSlashHitPlayer(other);
+            // enemyAttack.OnSlashHitPlayer(other);
         }
     }
 }

@@ -97,12 +97,12 @@ public class PlayerDash2D : MonoBehaviour
         int remain = Mathf.CeilToInt(dashCooldown);
         while (remain > 0)
         {
-            Debug.Log($"⏳ Dash Cooldown: {remain}");
+           // Debug.Log($"⏳ Dash Cooldown: {remain}");
             yield return new WaitForSeconds(1f);
             remain--;
         }
         isCooldown = false;
-        Debug.Log("✅ Dash Ready!");
+       // Debug.Log("✅ Dash Ready!");
     }
 
     // ========================= 잔상 관련 코드 =========================

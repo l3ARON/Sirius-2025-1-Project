@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: EnemyOutlineMat 1
   m_Shader: {fileID: 4800000, guid: ba9ee345a125e3b428d0a6dd1032c7bc, type: 3}
-  m_Parent: {fileID: 2100000, guid: f3a1ef7ee5ea4a44d900f51d053ee73c, type: 2}
+  m_Parent: {fileID: 2100000, guid: 635ca160c451ecc40a7d0010cf315be8, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
