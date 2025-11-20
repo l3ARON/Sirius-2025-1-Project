@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 819562083301151674}
   - component: {fileID: 3877085761091245247}
   - component: {fileID: 4027003673093626180}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Slice
   m_TagString: Melee
   m_Icon: {fileID: 0}
@@ -120,7 +120,7 @@ GameObject:
   - component: {fileID: 2044039888548953794}
   - component: {fileID: 3312056049100492088}
   - component: {fileID: 5935364370228584303}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: range
   m_TagString: Untagged
   m_Icon: {fileID: 0}

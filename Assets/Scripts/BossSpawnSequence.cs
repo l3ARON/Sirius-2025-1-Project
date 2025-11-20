@@ -22,7 +22,7 @@ public class BossSpawnSequence : MonoBehaviour
     {
         if (steps == null || steps.Length == 0)
         {
-            Debug.LogWarning("[BossSpawnSequence] steps가 비어있습니다!");
+            //Debug.LogWarning("[BossSpawnSequence] steps가 비어있습니다!");
             return;
         }
 
@@ -41,11 +41,11 @@ public class BossSpawnSequence : MonoBehaviour
                 if (step.prefab != null && step.spawnPoint != null)
                 {
                     Instantiate(step.prefab, step.spawnPoint.position, Quaternion.identity);
-                    Debug.Log($"[Spawn] {step.name} 생성 (delayAfter={step.delayAfter})");
+                    //Debug.Log($"[Spawn] {step.name} 생성 (delayAfter={step.delayAfter})");
                 }
                 else
                 {
-                    Debug.LogWarning("[SpawnStep] prefab 또는 spawnPoint가 비어있음");
+                    //Debug.LogWarning("[SpawnStep] prefab 또는 spawnPoint가 비어있음");
                 }
 
                 // 다음 스텝 전까지 대기

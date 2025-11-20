@@ -130,7 +130,7 @@ public class PlayerDamage2D : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        Debug.Log("Player Dead");
+        //Debug.Log("Player Dead");
 
         // 움직임/충돌 막고 싶으면 여기서 꺼도 됨 (선택)
         if (refs.rigid != null)

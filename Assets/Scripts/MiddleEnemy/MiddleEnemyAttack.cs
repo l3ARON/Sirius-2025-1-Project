@@ -152,7 +152,7 @@ public class MiddleEnemyAttack : MonoBehaviour
             {
                 dummyCtrl.TakeDamage(damage);
                 success = true;
-                Debug.Log("🎯 [RangeCheck] 더미 타격!");
+                //Debug.Log("🎯 [RangeCheck] 더미 타격!");
             }
             // 2️⃣ 태그가 'Player'인 경우 (진짜 플레이어 OR 아군 늑대)
             else if (hit.CompareTag("Player"))
@@ -165,7 +165,7 @@ public class MiddleEnemyAttack : MonoBehaviour
                      {
                          pd.OnDamaged(transform.position);
                          success = true;
-                         Debug.Log("🎯 [RangeCheck] 플레이어 타격!");
+                         //Debug.Log("🎯 [RangeCheck] 플레이어 타격!");
                      }
                      
                      // 🔥 B. [추가] 아군 늑대인지 확인 (태그는 Player지만 스크립트는 Controller)
@@ -175,7 +175,7 @@ public class MiddleEnemyAttack : MonoBehaviour
                          // 아군 늑대에게 데미지 전달
                          friendlyWolf.ApplyDamage(damage, true, transform.position);
                          success = true;
-                         Debug.Log("🎯 [RangeCheck] 아군 늑대 타격!");
+                         //Debug.Log("🎯 [RangeCheck] 아군 늑대 타격!");
                      }
                  }
             }
@@ -201,7 +201,7 @@ public class MiddleEnemyAttack : MonoBehaviour
                     }
                     
                     success = true;
-                    Debug.Log($"🎯 [RangeCheck] 적({hit.name}) 타격!!!!!!");
+                    //Debug.Log($"🎯 [RangeCheck] 적({hit.name}) 타격!!!!!!");
                 }
             }
 

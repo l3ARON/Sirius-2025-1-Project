@@ -147,6 +147,10 @@ public class PlayerAttack2D : MonoBehaviour
         if (enemy == null) return;
         Debug.Log("[PlayerAttack2D] 근접 타격, target = " + enemy.name);
 
+        if(enemy.name == "Boss"){
+            return;
+        }
+
         // 1) 소형 몬스터 체크
         SmallEnemyController small = enemy.GetComponentInParent<SmallEnemyController>();
         if (small != null)

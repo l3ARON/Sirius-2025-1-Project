@@ -8,6 +8,11 @@ public class BossController : MonoBehaviour
     private int currentHP;
     private bool isDead = false;
 
+    [Header("Damage Flash FX")]
+    public float flashDuration = 0.4f;     // 총 깜박임 시간
+    public float flashInterval = 0.1f;     // 깜박임 간격
+    private SpriteRenderer sprite;
+
     [Header("Slam Attack Settings")]
     public Collider2D slamHitbox;
     public float slamAirTime = 1f;
@@ -15,20 +20,18 @@ public class BossController : MonoBehaviour
     public int slamDamage = 3;
     public LayerMask slamTargetMask;
 
-    private bool isSlamming = false;
+    [Header("Slam FX")]
+    public GameObject dustEffect;
+    public Transform dustSpawnPoint;
+    public AudioSource slamSound;
+    public AudioSource jumpSound;
 
-    [Header("Slam Sound Effects")]
-    public AudioSource slamJumpSound;   // 🔼 올라갈 때 사운드
-    public AudioSource slamImpactSound; // 🔽 착지할 때 사운드
+    private bool isSlamming = false;
 
     void Awake()
     {
         currentHP = maxHP;
-    }
-
-    void Start()
-    {
-        Debug.Log("[BossController] Start() 호출됨");
+        sprite = GetComponent<SpriteRenderer>();   // ⚡ spriteRenderer 캐싱
     }
 
     public void TakeDamage(int damage)
@@ -38,12 +41,11 @@ public class BossController : MonoBehaviour
         currentHP -= damage;
         if (currentHP < 0) currentHP = 0;
 
-        Debug.Log($"{gameObject.name} took {damage} damage! HP = {currentHP}");
+        // 🔥 피격 깜박임 시작
+        StartCoroutine(DamageFlash());
 
-        // 🔥 HP가 5의 배수일 때마다 Slam 발동
-        if (currentHP > 0 &&
-            currentHP % 5 == 0 &&
-            !isSlamming)
+        // 🔥 체력이 5 단위로 줄어들면 Slam Attack
+        if (currentHP > 0 && currentHP % 5 == 0 && !isSlamming)
         {
             StartCoroutine(SlamAttackRoutine());
         }
@@ -54,13 +56,24 @@ public class BossController : MonoBehaviour
         }
     }
 
-    void Die()
+    IEnumerator DamageFlash()
     {
-        if (isDead) return;
+        float elapsed = 0f;
+        bool visible = true;
 
-        Debug.Log($"{gameObject.name} died!");
-        isDead = true;
-        Destroy(gameObject);
+        while (elapsed < flashDuration)
+        {
+            visible = !visible;
+            if (sprite != null)
+                sprite.enabled = visible;
+
+            yield return new WaitForSeconds(flashInterval);
+            elapsed += flashInterval;
+        }
+
+        // 깜박임 종료 → 다시 보이게
+        if (sprite != null)
+            sprite.enabled = true;
     }
 
     IEnumerator SlamAttackRoutine()
@@ -71,42 +84,50 @@ public class BossController : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 upPos = startPos + Vector3.up * slamHeight;
 
-        float halfTime = slamAirTime / 2f;
+        float halfTime = slamAirTime * 0.5f;
+
         float t = 0f;
 
-        // 🔊 올라가기 사운드
-        if (slamJumpSound != null){
-            /// Debug.Log("???");
-            // slamJumpSound.Play();
-            slamImpactSound.Play();
-        }
+        if (jumpSound != null)
+            jumpSound.Play();
 
-        // 🔼 위로 이동
         while (t < halfTime)
         {
             t += Time.deltaTime;
-            float lerp = Mathf.Clamp01(t / halfTime);
-            transform.position = Vector3.Lerp(startPos, upPos, lerp);
+            transform.position = Vector3.Lerp(startPos, upPos, t / halfTime);
             yield return null;
         }
 
-        // 🔽 아래로 이동
         t = 0f;
         while (t < halfTime)
         {
             t += Time.deltaTime;
-            float lerp = Mathf.Clamp01(t / halfTime);
-            transform.position = Vector3.Lerp(upPos, startPos, lerp);
+            transform.position = Vector3.Lerp(upPos, startPos, t / halfTime);
             yield return null;
         }
 
-        // 🔥 착지 사운드!
-        // if (slamImpactSound != null) slamImpactSound.Play();
-
-        // 🌋 땅에 닿은 순간 → 데미지
+        // 💥 Slam Impact
         DoSlamDamage();
+        SpawnDustEffect();
 
         isSlamming = false;
+    }
+
+    void SpawnDustEffect()
+    {
+        if (dustEffect != null)
+        {
+            GameObject dust = Instantiate(
+                dustEffect,
+                dustSpawnPoint != null ? dustSpawnPoint.position : transform.position,
+                Quaternion.identity
+            );
+
+            Destroy(dust, 3f);
+        }
+
+        if (slamSound != null)
+            slamSound.Play();
     }
 
     void DoSlamDamage()
@@ -118,15 +139,15 @@ public class BossController : MonoBehaviour
 
         foreach (var hit in hits)
         {
+            // 플레이어
             PlayerDamage2D pd = hit.GetComponent<PlayerDamage2D>();
-
             if (pd != null)
             {
                 pd.OnDamaged(transform.position);
-                Debug.Log("Boss Slam → Player에게 데미지!");
                 continue;
             }
 
+            // 기타 적 TakeDamage 지원
             var comps = hit.GetComponentsInParent<MonoBehaviour>();
             foreach (var comp in comps)
             {
@@ -134,20 +155,17 @@ public class BossController : MonoBehaviour
                 if (method != null)
                 {
                     method.Invoke(comp, new object[] { slamDamage });
-                    Debug.Log($"{hit.name}에게 {slamDamage} 데미지");
                     break;
                 }
             }
         }
     }
 
-    void OnDrawGizmosSelected()
+    void Die()
     {
-        if (slamHitbox != null)
-        {
-            Gizmos.color = new Color(1, 0.3f, 0.3f, 0.3f);
-            Bounds b = slamHitbox.bounds;
-            Gizmos.DrawCube(b.center, b.size);
-        }
+        if (isDead) return;
+        isDead = true;
+        slamSound.Play();
+        Destroy(gameObject);
     }
 }
