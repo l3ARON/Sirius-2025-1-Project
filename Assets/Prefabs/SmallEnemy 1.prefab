@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c85919fb6fc5717429000ebdbfeb92c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRadius: 3.5
+  detectionRadius: 5
   waitBeforeDash: 0.5
   dashSpeed: 12
   dashDuration: 0.8

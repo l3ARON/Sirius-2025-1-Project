@@ -202,11 +202,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolSpeed: 1.5
   chaseSpeed: 5
-  followDistance: 2
-  enemyDetectRadius: 8
+  friendlyDetectWidth: 25
+  friendlyDetectHeight: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  followDistance: 2
   detectWidth: 27
   detectHeight: 3
   playerLayer:

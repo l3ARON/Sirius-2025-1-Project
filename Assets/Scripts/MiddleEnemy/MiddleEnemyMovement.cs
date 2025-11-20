@@ -10,15 +10,18 @@ public class MiddleEnemyMovement : MonoBehaviour
     public float patrolSpeed = 1.5f;
     public float chaseSpeed = 4.0f; // 공격하러 갈 땐 더 빠르게
     
-    [Header("아군 모드 AI")]
-    public float followDistance = 2.5f;      // 플레이어와 유지할 거리
-    public float enemyDetectRadius = 8.0f;   // 적 감지 범위
-    public LayerMask enemyLayer;             // 감지할 적 레이어 (Enemy)
+    [Header("아군 모드 AI - 박스 감지")]
+    public float friendlyDetectWidth = 6f;
+    public float friendlyDetectHeight = 3f;
+    public LayerMask enemyLayer;  // 적 레이어
+
+    [Header("플레이어 따라가기")]
+    public float followDistance = 2.5f;
 
     [Header("적군 모드 AI")]
     public float detectWidth = 8f;
     public float detectHeight = 3f;
-    public LayerMask playerLayer;            // 감지할 플레이어 레이어
+    public LayerMask playerLayer;
 
     [Header("상태")]
     public bool isMovementPaused = false;
@@ -48,16 +51,14 @@ public class MiddleEnemyMovement : MonoBehaviour
         }
 
         if (isFriendlyMode)
-        {
             FriendlyBehavior();
-        }
         else
-        {
             EnemyBehavior();
-        }
     }
 
-    // 🛡️ 아군일 때 행동 패턴
+    // ============================
+    // 🛡️ 아군 모드 행동
+    // ============================
     void FriendlyBehavior()
     {
         if (player == null)
@@ -66,122 +67,146 @@ public class MiddleEnemyMovement : MonoBehaviour
             return;
         }
 
-        // 1순위: 주변 적 탐색
-        Transform targetEnemy = DetectNearestEnemy();
+        // 🔥 직사각형 범위에서 적 감지
+        Transform targetEnemy = DetectNearestEnemyBox();
 
         if (targetEnemy != null)
         {
-            // 🚨 적 발견! -> 적에게 돌진 & 공격 타겟 설정
             if (attack != null) attack.SetTarget(targetEnemy);
-            MoveToTarget(targetEnemy.position, 0.8f); // 적 앞까지 바짝 붙음
+            MoveToTarget(targetEnemy.position, 0.8f);
             UpdateAnim(true);
             return;
         }
 
-        // 🕊️ 적 없음 -> 플레이어 따라다니기 (보디가드)
+        // 적이 없으면 플레이어에게 따라가기
         if (attack != null) attack.SetTarget(null);
 
-        // ▶ 플레이어와의 거리로만 판단
         float distToPlayer = Vector2.Distance(transform.position, player.position);
 
-        // followDistance 보다 멀면 따라가기
         if (distToPlayer > followDistance)
         {
             MoveToTarget(player.position, followDistance);
-            UpdateAnim(true);          // 이동 애니메이션
+            UpdateAnim(true);
         }
         else
         {
-            // 일정 범위 안에 있으면 그 자리에서 대기 (Idle)
             rigid.velocity = new Vector2(0f, rigid.velocity.y);
-            UpdateAnim(false);         // Idle 애니메이션
+            UpdateAnim(false);
         }
     }
 
-
-    // 😈 적일 때 행동 패턴
+    // ============================
+    // 😈 적군 모드 행동
+    // ============================
     void EnemyBehavior()
     {
         if (player == null) return;
-        if (attack != null) attack.SetTarget(player); // 무조건 플레이어만 노림
+        if (attack != null) attack.SetTarget(player);
 
         bool detected = DetectPlayerBox();
-        // Debug.Log($"[EnemyBehavior] detected={detected}, velX={rigid.velocity.x}");
 
         if (detected)
         {
-            // 플레이어를 발견하면 추격
             MoveToTarget(player.position, 0.5f);
             UpdateAnim(true);
         }
         else
         {
-            // ❗ 플레이어가 감지되지 않으면 제자리에서 Idle
-            rigid.velocity = new Vector2(0f, rigid.velocity.y);  // x속도 0
-            // Debug.Log("[EnemyBehavior] Player not detected → stop & Idle");
-            UpdateAnim(false);                                  // isWalk/isRun 끄고 Idle
+            rigid.velocity = new Vector2(0f, rigid.velocity.y);
+            UpdateAnim(false);
         }
     }
 
+    // ============================
+    // 📌 아군 모드 적 감지 (직사각형 박스)
+    // ============================
+    Transform DetectNearestEnemyBox()
+    {
+        Vector2 center = transform.position;
+        Vector2 size = new Vector2(friendlyDetectWidth, friendlyDetectHeight);
 
+        Collider2D[] hits = Physics2D.OverlapBoxAll(center, size, 0f, enemyLayer);
 
-    // 공통 이동 함수
+        Transform nearest = null;
+        float minDist = float.MaxValue;
+
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject == gameObject) continue;
+
+            float dst = Vector2.Distance(transform.position, hit.transform.position);
+            if (dst < minDist)
+            {
+                nearest = hit.transform;
+                minDist = dst;
+            }
+        }
+
+        return nearest;
+    }
+
+    // ============================
+    // 📌 적군 모드 플레이어 감지
+    // ============================
+    bool DetectPlayerBox()
+    {
+        Vector2 size = new Vector2(detectWidth, detectHeight);
+        Collider2D hit = Physics2D.OverlapBox(transform.position, size, 0f, playerLayer);
+
+        return hit != null;
+    }
+
+    // ============================
+    // 이동 공통 함수
+    // ============================
     void MoveToTarget(Vector3 targetPos, float stopDist)
     {
         float dist = Vector2.Distance(transform.position, targetPos);
-        // Debug.Log($"[MoveToTarget] dist={dist:F2}, stopDist={stopDist}");
 
         if (dist > stopDist)
         {
             float dirX = Mathf.Sign(targetPos.x - transform.position.x);
             rigid.velocity = new Vector2(chaseSpeed * dirX, rigid.velocity.y);
             Flip(dirX);
-            
-            // Debug.Log($"[MoveToTarget] MOVE → dirX={dirX}, velX={rigid.velocity.x}");
         }
         else
         {
-            // 도착했으면 멈춤 (Idle)
             rigid.velocity = Vector2.zero;
-            Debug.Log("[MoveToTarget] REACHED target → stop, Idle");
             UpdateAnim(false);
         }
     }
 
-
-    // 가장 가까운 적 찾기 (OverlapCircle)
-    Transform DetectNearestEnemy()
+    void Flip(float dir)
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, enemyDetectRadius, enemyLayer);
-        Transform nearest = null;
-        float minDst = float.MaxValue;
+        if (dir == 0) return;
+        Vector3 sc = transform.localScale;
+        sc.x = Mathf.Abs(sc.x) * (dir > 0 ? 1 : -1);
+        transform.localScale = sc;
+    }
 
-        foreach (var hit in hits)
+    // ============================
+    // 애니메이션 갱신
+    // ============================
+    void UpdateAnim(bool isMoving)
+    {
+        if (anim == null) return;
+
+        if (!isMoving)
         {
-            if (hit.gameObject == gameObject) continue; // 나 자신 제외
-
-            float dst = Vector2.Distance(transform.position, hit.transform.position);
-            if (dst < minDst)
-            {
-                minDst = dst;
-                nearest = hit.transform;
-            }
+            anim.SetBool("isRun",  false);
+            anim.SetBool("isWalk", false);
+            return;
         }
-        return nearest;
+
+        bool run = isFriendlyMode ? isMoving : DetectPlayerBox();
+
+        anim.SetBool("isRun",  run);
+        anim.SetBool("isWalk", !run);
     }
 
-    bool DetectPlayerBox()
-    {
-        Vector2 center = transform.position;
-        Vector2 size = new Vector2(detectWidth, detectHeight);
-        Collider2D hit = Physics2D.OverlapBox(center, size, 0f, playerLayer);
-
-        bool result = (hit != null);
-        Debug.Log($"[DetectPlayerBox] hit={(hit != null ? hit.name : "null")}, result={result}, layerMask={playerLayer.value}");
-        return result;
-    }
-
-
+    // ============================
+    // 기타 기능
+    // ============================
     public void SetFriendlyMode()
     {
         isFriendlyMode = true;
@@ -197,50 +222,15 @@ public class MiddleEnemyMovement : MonoBehaviour
 
     public void ResumeMovement() => isMovementPaused = false;
 
-    void Flip(float dir)
-    {
-        if (dir == 0) return;
-        Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * (dir > 0 ? 1 : -1);
-        transform.localScale = scale;
-    }
-
-    void UpdateAnim(bool isMoving)
-    {
-        if (anim == null) return;
-        
-        // 아군이거나 플레이어 감지되면 Run 상태
-        bool runCondition = isFriendlyMode ? isMoving : DetectPlayerBox();
-        checkMove(isMoving, runCondition);
-    }
-
-    void checkMove(bool isMoving, bool runCondition)
-    {
-        if (!isMoving)
-        {
-            anim.SetBool("isRun",  false);
-            anim.SetBool("isWalk", false);
-            Debug.Log("[Anim] Idle (isMoving=false) → isRun=false, isWalk=false");
-            return;
-        }
-
-        bool isRun  = runCondition;
-        bool isWalk = !runCondition;
-
-        anim.SetBool("isRun",  isRun);
-        anim.SetBool("isWalk", isWalk);
-
-        Debug.Log($"[Anim] isMoving={isMoving}, runCondition={runCondition} → isRun={isRun}, isWalk={isWalk}");
-    }
-
-
-
+    // ============================
+    // Gizmos (디버그)
+    // ============================
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red; // 적군 감지 범위
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(transform.position, new Vector2(friendlyDetectWidth, friendlyDetectHeight));
+
+        Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, new Vector2(detectWidth, detectHeight));
-        
-        Gizmos.color = Color.green; // 아군일 때 적 감지 범위
-        Gizmos.DrawWireSphere(transform.position, enemyDetectRadius);
     }
 }
