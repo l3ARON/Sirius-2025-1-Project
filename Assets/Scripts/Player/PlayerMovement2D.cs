@@ -13,6 +13,9 @@ public class PlayerMovement2D : MonoBehaviour
 
     PlayerRefs refs;
 
+    // 👉 지금 땅에 붙어있는지 여부
+    bool isGrounded = false;
+
     void Start()
     {
         refs = GetComponent<PlayerRefs>();
@@ -33,12 +36,15 @@ public class PlayerMovement2D : MonoBehaviour
     // 점프 입력
     void HandleJump()
     {
-        if (Input.GetButtonDown("Jump") && !refs.anim.GetBool("isJump"))
+        // 🔥 오직 "땅에 있을 때"만 점프 가능
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             // 위로 튀게
             refs.rigid.velocity = new Vector2(refs.rigid.velocity.x, 0f);
             refs.rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-            refs.anim.SetBool("isJump", true);
+
+            isGrounded = false;                 // 이제 공중 상태
+            refs.anim.SetBool("isJump", true);  // 점프 애니 시작
         }
     }
 
@@ -85,7 +91,7 @@ public class PlayerMovement2D : MonoBehaviour
             );
         }
 
-        // 걷기 사운드 (원하면 조건 더 넣어도 됨)
+        // 걷기 사운드
         if (refs.walkClip != null && !refs.walkClip.isPlaying)
             refs.walkClip.Play();
     }
@@ -93,7 +99,6 @@ public class PlayerMovement2D : MonoBehaviour
     // 실제 이동 (물리)
     void HandleMove()
     {
-        // 대시 중일 때는 이동 안 하게 하고 싶으면 여기서 체크
         refs.rigid.velocity = new Vector2(hInput * maxSpeed, refs.rigid.velocity.y);
 
         // 속도 제한
@@ -103,24 +108,36 @@ public class PlayerMovement2D : MonoBehaviour
             refs.rigid.velocity = new Vector2(-maxSpeed, refs.rigid.velocity.y);
     }
 
-    // 바닥 체크해서 점프 상태 해제
+    // 바닥 체크해서 착지 여부 판단
     void HandleLanding()
     {
-        // 떨어지는 중일 때만 체크
-        if (refs.rigid.velocity.y >= -0.3f) return;
-
         Vector2 pos = refs.rigid.position;
         LayerMask groundMask = LayerMask.GetMask(groundLayerName);
 
         RaycastHit2D center = Physics2D.Raycast(pos, Vector2.down, groundRayLength, groundMask);
-        RaycastHit2D left = Physics2D.Raycast(pos + Vector2.left * 0.3f, Vector2.down, groundRayLength, groundMask);
-        RaycastHit2D right = Physics2D.Raycast(pos + Vector2.right * 0.3f, Vector2.down, groundRayLength, groundMask);
+        RaycastHit2D left   = Physics2D.Raycast(pos + Vector2.left  * 0.3f, Vector2.down, groundRayLength, groundMask);
+        RaycastHit2D right  = Physics2D.Raycast(pos + Vector2.right * 0.3f, Vector2.down, groundRayLength, groundMask);
 
-        if ((center.collider != null && center.normal.y > 0.7f) ||
-            (left.collider != null && left.normal.y > 0.7f) ||
-            (right.collider != null && right.normal.y > 0.7f))
+        bool hitGround =
+            (center.collider != null && center.normal.y > 0.7f) ||
+            (left.collider   != null && left.normal.y   > 0.7f) ||
+            (right.collider  != null && right.normal.y  > 0.7f);
+
+        if (hitGround)
         {
-            refs.anim.SetBool("isJump", false);
+            // ✅ 땅에 닿은 순간
+            if (!isGrounded)
+            {
+                isGrounded = true;
+                refs.anim.SetBool("isJump", false);  // 점프 애니 종료
+            }
+        }
+        else
+        {
+            // 공중
+            isGrounded = false;
+            // 점프 상태일 땐 isJump 유지 → 필요 없으면 아래 줄 빼도 됨
+            // refs.anim.SetBool("isJump", true);
         }
     }
 }

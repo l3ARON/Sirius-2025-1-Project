@@ -87,9 +87,22 @@ public class PlayerDash2D : MonoBehaviour
         // 이동 다시 켜기
         if (move != null) move.enabled = true;
 
+        // ❗ 여기 로직 수정
+        // 공중에 있을 때는 isJump를 false로 만들지 않고,
+        // "발이 땅에 닿았을 때(HandleLanding에서)"만 isJump를 false로 바꾸게 함.
         if (refs.anim != null)
-            refs.anim.SetBool("isJump", false);
+        {
+            bool isAirborne = Mathf.Abs(refs.rigid.velocity.y) > 0.1f;
+
+            // 땅에 거의 붙어있는 상태(수직속도 0 근처)에서만 점프 상태 해제
+            if (!isAirborne)
+            {
+                refs.anim.SetBool("isJump", false);
+            }
+            // 공중이면 그대로 유지 → HandleLanding()에서만 false로 바뀜
+        }
     }
+
 
     IEnumerator DashCooldown()
     {
