@@ -106,6 +106,25 @@ public class PlayerDamage2D : MonoBehaviour
 
     bool isDead = false;   // 👈 추가
 
+    void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Equals))
+        {
+            Heal(1);
+        }
+    }
+
+    public void Heal(int amount)
+    {
+        if (isDead) return;
+
+        curHp += amount;
+        if (curHp > maxHp)
+            curHp = maxHp;
+
+        UpdateHpUI();
+    }
+
     void Die()
     {
         if (isDead) return;

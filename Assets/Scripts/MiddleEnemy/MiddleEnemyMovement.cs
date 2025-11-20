@@ -60,6 +60,12 @@ public class MiddleEnemyMovement : MonoBehaviour
     // 🛡️ 아군일 때 행동 패턴
     void FriendlyBehavior()
     {
+        if (player == null)
+        {
+            UpdateAnim(false);
+            return;
+        }
+
         // 1순위: 주변 적 탐색
         Transform targetEnemy = DetectNearestEnemy();
 
@@ -68,18 +74,30 @@ public class MiddleEnemyMovement : MonoBehaviour
             // 🚨 적 발견! -> 적에게 돌진 & 공격 타겟 설정
             if (attack != null) attack.SetTarget(targetEnemy);
             MoveToTarget(targetEnemy.position, 0.8f); // 적 앞까지 바짝 붙음
+            UpdateAnim(true);
+            return;
+        }
+
+        // 🕊️ 적 없음 -> 플레이어 따라다니기 (보디가드)
+        if (attack != null) attack.SetTarget(null);
+
+        // ▶ 플레이어와의 거리로만 판단
+        float distToPlayer = Vector2.Distance(transform.position, player.position);
+
+        // followDistance 보다 멀면 따라가기
+        if (distToPlayer > followDistance)
+        {
+            MoveToTarget(player.position, followDistance);
+            UpdateAnim(true);          // 이동 애니메이션
         }
         else
         {
-            // 🕊️ 적 없음 -> 플레이어 따라다니기 (보디가드)
-            if (attack != null) attack.SetTarget(null); // 공격 타겟 해제
-            
-            if (player != null)
-            {
-                MoveToTarget(player.position, followDistance);
-            }
+            // 일정 범위 안에 있으면 그 자리에서 대기 (Idle)
+            rigid.velocity = new Vector2(0f, rigid.velocity.y);
+            UpdateAnim(false);         // Idle 애니메이션
         }
     }
+
 
     // 😈 적일 때 행동 패턴
     void EnemyBehavior()
@@ -88,40 +106,48 @@ public class MiddleEnemyMovement : MonoBehaviour
         if (attack != null) attack.SetTarget(player); // 무조건 플레이어만 노림
 
         bool detected = DetectPlayerBox();
-        
+        // Debug.Log($"[EnemyBehavior] detected={detected}, velX={rigid.velocity.x}");
+
         if (detected)
         {
+            // 플레이어를 발견하면 추격
             MoveToTarget(player.position, 0.5f);
+            UpdateAnim(true);
         }
         else
         {
-            // 순찰 (간단히 현재 방향 유지)
-            float dirX = (rigid.velocity.x == 0) ? 1f : Mathf.Sign(rigid.velocity.x);
-            rigid.velocity = new Vector2(patrolSpeed * dirX, rigid.velocity.y);
-            Flip(dirX);
-            UpdateAnim(true);
+            // ❗ 플레이어가 감지되지 않으면 제자리에서 Idle
+            rigid.velocity = new Vector2(0f, rigid.velocity.y);  // x속도 0
+            // Debug.Log("[EnemyBehavior] Player not detected → stop & Idle");
+            UpdateAnim(false);                                  // isWalk/isRun 끄고 Idle
         }
     }
+
+
 
     // 공통 이동 함수
     void MoveToTarget(Vector3 targetPos, float stopDist)
     {
         float dist = Vector2.Distance(transform.position, targetPos);
+        // Debug.Log($"[MoveToTarget] dist={dist:F2}, stopDist={stopDist}");
 
         if (dist > stopDist)
         {
             float dirX = Mathf.Sign(targetPos.x - transform.position.x);
             rigid.velocity = new Vector2(chaseSpeed * dirX, rigid.velocity.y);
             Flip(dirX);
-            UpdateAnim(true);
+            
+            // Debug.Log($"[MoveToTarget] MOVE → dirX={dirX}, velX={rigid.velocity.x}");
         }
         else
         {
             // 도착했으면 멈춤 (Idle)
             rigid.velocity = Vector2.zero;
+            Debug.Log("[MoveToTarget] REACHED target → stop, Idle");
             UpdateAnim(false);
         }
     }
+
 
     // 가장 가까운 적 찾기 (OverlapCircle)
     Transform DetectNearestEnemy()
@@ -148,8 +174,13 @@ public class MiddleEnemyMovement : MonoBehaviour
     {
         Vector2 center = transform.position;
         Vector2 size = new Vector2(detectWidth, detectHeight);
-        return Physics2D.OverlapBox(center, size, 0f, playerLayer) != null;
+        Collider2D hit = Physics2D.OverlapBox(center, size, 0f, playerLayer);
+
+        bool result = (hit != null);
+        Debug.Log($"[DetectPlayerBox] hit={(hit != null ? hit.name : "null")}, result={result}, layerMask={playerLayer.value}");
+        return result;
     }
+
 
     public void SetFriendlyMode()
     {
@@ -177,17 +208,32 @@ public class MiddleEnemyMovement : MonoBehaviour
     void UpdateAnim(bool isMoving)
     {
         if (anim == null) return;
-        anim.SetBool("isWalk", isMoving);
         
         // 아군이거나 플레이어 감지되면 Run 상태
         bool runCondition = isFriendlyMode ? isMoving : DetectPlayerBox();
         checkMove(isMoving, runCondition);
     }
 
-    void checkMove(bool isMoving, bool runCondition){
-        anim.SetBool("isRun", isMoving && runCondition);
-        anim.SetBool("isWalk", !(isMoving && runCondition));
+    void checkMove(bool isMoving, bool runCondition)
+    {
+        if (!isMoving)
+        {
+            anim.SetBool("isRun",  false);
+            anim.SetBool("isWalk", false);
+            Debug.Log("[Anim] Idle (isMoving=false) → isRun=false, isWalk=false");
+            return;
+        }
+
+        bool isRun  = runCondition;
+        bool isWalk = !runCondition;
+
+        anim.SetBool("isRun",  isRun);
+        anim.SetBool("isWalk", isWalk);
+
+        Debug.Log($"[Anim] isMoving={isMoving}, runCondition={runCondition} → isRun={isRun}, isWalk={isWalk}");
     }
+
+
 
     void OnDrawGizmosSelected()
     {
