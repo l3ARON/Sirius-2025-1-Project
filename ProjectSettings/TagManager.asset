@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - RespawnTag
   - Friendly
+  - Melee
   layers:
   - Default
   - TransparentFX

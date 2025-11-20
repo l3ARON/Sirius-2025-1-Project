@@ -51,8 +51,12 @@ public class LongRangeAttack : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             var components = other.GetComponentsInParent<MonoBehaviour>();
+
             foreach (var component in components)
             {
+                if (component == null)        // 🔴 Missing Script 같은 null 컴포넌트 스킵
+                    continue;
+
                 var method = component.GetType().GetMethod("TakeDamage");
                 if (method != null)
                 {
@@ -60,9 +64,11 @@ public class LongRangeAttack : MonoBehaviour
                     break;
                 }
             }
+
             Destroy(gameObject);
             return;
         }
+
 
         // 3️⃣ 바닥(플랫폼)에 부딪히면 삭제
         if (other.gameObject.layer == LayerMask.NameToLayer("flatform"))

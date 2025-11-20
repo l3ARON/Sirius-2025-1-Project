@@ -22,6 +22,9 @@ public class MiddleEnemyAttack : MonoBehaviour
     public float hitStart = 0.0f;      
     public float hitEnd = 0.4f;
 
+    [Header("Slam Sound Effects")]
+    public AudioSource sound;   // 🔼 올라갈 때 사운드
+
     // 상태 변수
     Transform currentTarget;
     [HideInInspector] public bool isAttacking = false;
@@ -82,6 +85,7 @@ public class MiddleEnemyAttack : MonoBehaviour
         yield return new WaitForSeconds(windUpTime);
 
         // 2. 돌진
+        sound.Play();
         anim.SetBool("isReady", false);
         anim.SetBool("isAttack", true);
 
@@ -190,9 +194,14 @@ public class MiddleEnemyAttack : MonoBehaviour
                         // 늑대가 죽여도 원거리 공격이 충전되지 않음
                         small.TakeDamage(damage, true, false); 
                     }
+
+                    var boss = hit.GetComponent<BossController>();
+                    if(boss != null){
+                        boss.TakeDamage(damage);
+                    }
                     
                     success = true;
-                    Debug.Log($"🎯 [RangeCheck] 적({hit.name}) 타격!");
+                    Debug.Log($"🎯 [RangeCheck] 적({hit.name}) 타격!!!!!!");
                 }
             }
 
