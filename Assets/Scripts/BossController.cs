@@ -27,11 +27,13 @@ public class BossController : MonoBehaviour
     public AudioSource jumpSound;
 
     private bool isSlamming = false;
+    Animator anim;
 
     void Awake()
     {
         currentHP = maxHP;
         sprite = GetComponent<SpriteRenderer>();   // ⚡ spriteRenderer 캐싱
+        anim = GetComponent<Animator>();
     }
 
     public void TakeDamage(int damage)
@@ -165,7 +167,25 @@ public class BossController : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-        slamSound.Play();
-        Destroy(gameObject);
+
+        if (slamSound != null)
+            slamSound.Play();
+
+        if (anim != null)
+            anim.SetBool("isDie", true);
+
+        // 🔥 죽으면 충돌 모두 비활성화
+        Collider2D[] cols = GetComponentsInChildren<Collider2D>();
+        foreach (var c in cols)
+            c.enabled = false;
+
+        // 🔥 물리 중단
+        Rigidbody2D rigid = GetComponent<Rigidbody2D>();
+        if (rigid != null)
+        {
+            rigid.velocity = Vector2.zero;
+            rigid.simulated = false;
+        }
     }
+
 }
