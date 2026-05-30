@@ -1,0 +1,46 @@
+enabled: true
+
+project:
+  name: "Sirius Bug Quest"
+  slug: "sirius-bug-quest"
+  description: "Unity game project from the Sirius game development workflow, focused on Bug Quest gameplay and iteration."
+  category: "Unity Game"
+  tags:
+    - unity
+    - game
+    - sirius
+    - csharp
+  repo_url: "https://github.com/yuykim/Sirius-Bug-Quest"
+  intro:
+    title: "Sirius Bug Quest"
+    summary: "A Unity game project used to record gameplay implementation, debugging, and iteration work."
+    publish_on_first_import: true
+
+diary:
+  path: "dev_diary"
+  assets_path: "dev_diary/assets"
+
+history:
+  path: "HISTORY.md"
+
+publish:
+  mode: "auto"
+  target_blog_repo: "yuykim/yuykim-dev-diary"
+  branch: "develop"
+
+privacy:
+  default_visibility: "public"
+  exclude_patterns:
+    - ".env"
+    - "secrets/"
+    - "*.key"
+    - "*.pem"
+    - "private/"
+    - "credentials/"
+    - "*.db"
+    - "*.sqlite"
+    - "Library/"
+    - "Logs/"
+    - "Temp/"
+    - "Build/"
+    - "build/"
