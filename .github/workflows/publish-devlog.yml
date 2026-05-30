@@ -1,6 +1,7 @@
 name: Publish Dev Diary
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - develop
@@ -13,6 +14,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      BLOG_TOKEN: ${{ secrets.BLOG_DISPATCH_TOKEN }}
 
     steps:
       - name: Checkout source repository
@@ -24,13 +27,12 @@ jobs:
         run: test -f .devlog.yml
 
       - name: Skip when dispatch token is missing
-        if: ${{ secrets.BLOG_DISPATCH_TOKEN == '' }}
+        if: ${{ env.BLOG_TOKEN == '' }}
         run: echo "BLOG_DISPATCH_TOKEN is not configured; skipping blog dispatch."
 
       - name: Send repository dispatch to blog
-        if: ${{ secrets.BLOG_DISPATCH_TOKEN != '' }}
+        if: ${{ env.BLOG_TOKEN != '' }}
         env:
-          BLOG_TOKEN: ${{ secrets.BLOG_DISPATCH_TOKEN }}
           SOURCE_REPO: ${{ github.repository }}
           SOURCE_SHA: ${{ github.sha }}
         run: |
